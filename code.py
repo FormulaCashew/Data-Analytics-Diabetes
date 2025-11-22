@@ -32,9 +32,13 @@ print(df.head())
 # Calculate the number of missing values in each column
 print(df.isnull().sum())
 
-# Clean the data
-exclusions = "diabetes_risk_score"
-df_cleaned = df.drop(exclusions, axis=1)
+# Drop rows with missing values (The dataset used has no missing values so this is not needed)
+for row in df.index:
+    if df.loc[row].isnull().sum() > 0:
+        df = df.drop(row)
+
+# Remove diabetes risk column as it may be a target variable
+df_cleaned = df.drop("diabetes_risk_score", axis=1)
 print(df_cleaned.head())
 
 # Print unique values for non numerical columns
@@ -58,6 +62,7 @@ for col in df_cleaned.columns:
 
 # Create Graphics object from cleaned columns
 graphics = Graphics(df_cleaned)
+
 
 # Divide the columns into 3 quarters to show histograms and prevent overlapping
 f_quarter_columns = df_cleaned.columns[1:4] # test column division
