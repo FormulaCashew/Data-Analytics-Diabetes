@@ -29,7 +29,12 @@ class Graphics:
             ax.set_title(column)
             ax.set_xlabel(column)
             ax.set_ylabel("Frequency")
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+            ax.tick_params(axis='x', rotation=45) # Rotate x-axis labels
+        
+        # Hide unused axes
+        for i in range(num_cols, num_rows * cols_per_row):
+            axes[i].axis('off')
+
         plt.tight_layout()
         plt.show()
     
