@@ -69,11 +69,14 @@ fourth_six_cols = df_cleaned.columns[18:24]
 fifth_six_cols = df_cleaned.columns[24:30]
 
 # Show histograms
-graphics.show_histograms(first_six_cols)
-graphics.show_histograms(second_six_cols)
-graphics.show_histograms(third_six_cols)
-graphics.show_histograms(fourth_six_cols)
-graphics.show_histograms(fifth_six_cols)
+if False : # Toggle to show histograms
+    graphics.show_histograms(first_six_cols)
+    graphics.show_histograms(second_six_cols)
+    graphics.show_histograms(third_six_cols)
+    graphics.show_histograms(fourth_six_cols)
+    graphics.show_histograms(fifth_six_cols)
+
+########################### Encoding ###########################
 
 # Convert object columns to numeric codes
 # Encoding guide:
@@ -87,3 +90,27 @@ graphics.show_histograms(fifth_six_cols)
 for col in df_cleaned.columns:
     if df_cleaned[col].dtype == 'object':
         df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
+
+# Print dtypes to check if encoding was successful
+print(df_cleaned.dtypes)
+
+# Divide again columns as they need to be updated after encoding
+first_six_cols = df_cleaned.columns[:6]
+second_six_cols = df_cleaned.columns[6:12]
+third_six_cols = df_cleaned.columns[12:18]
+fourth_six_cols = df_cleaned.columns[18:24]
+fifth_six_cols = df_cleaned.columns[24:30]
+
+# Create new Graphics object from cleaned columns
+graphics_num_encoded = Graphics(df_cleaned)
+
+# Show correlation matrix
+graphics_num_encoded.show_correlation_matrix(first_six_cols)
+graphics_num_encoded.show_correlation_matrix(second_six_cols)
+graphics_num_encoded.show_correlation_matrix(third_six_cols)
+graphics_num_encoded.show_correlation_matrix(fourth_six_cols)
+graphics_num_encoded.show_correlation_matrix(fifth_six_cols)
+
+# Show scatter matrix
+#graphics_num_encoded.show_scatter_matrix(first_six_cols)
+
