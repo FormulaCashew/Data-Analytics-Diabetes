@@ -43,6 +43,14 @@ for col in df_cleaned.columns:
         print(f"Unique values for {col}: {df_cleaned[col].unique()}")
 
 # Convert object columns to numeric codes
+# Encoding guide:
+# Gender: Male = 0, Female = 1, Other = 2
+# Ethnicity: Asian = 0, White = 1, Hispanic = 2, Black = 3, Other = 4
+# Education level: Highschool = 0, Graduate = 1, Postgraduate = 2, No formal = 3
+# Income level: Lower-Middle = 0, Middle = 1, Low = 2, Upper-Middle = 3, High = 4
+# Employment status: Employed = 0, Unemployed = 1, Retired = 2, Student = 3
+# Smoking status: Never = 0, Former = 1, Current = 2
+# Diabetes stage: Type 2 = 0, No Diabetes = 1, Pre-Diabetes = 2, Gestational = 3, Type 1 = 4
 for col in df_cleaned.columns:
     if df_cleaned[col].dtype == 'object':
         df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
