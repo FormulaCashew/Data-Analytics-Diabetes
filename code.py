@@ -5,6 +5,7 @@ import pandas as pd
 import os
 import shutil
 import kagglehub
+from Graphics import Graphics
 
 csv_name = "diabetes_dataset.csv"
 
@@ -27,3 +28,15 @@ df = pd.read_csv(csv_name)
  
 # Print the first 5 rows of the DataFrame
 print(df.head())
+
+# Calculate the number of missing values in each column
+print(df.isnull().sum())
+
+# Clean the data
+exclusions = "diabetes_risk_score"
+df_cleaned = df.drop(exclusions, axis=1)
+print(df_cleaned.head())
+
+# Print histograms
+graphics = Graphics(df_cleaned)
+graphics.show_histograms()
