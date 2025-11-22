@@ -41,6 +41,18 @@ for row in df.index:
 df_cleaned = df.drop("diabetes_risk_score", axis=1)
 print(df_cleaned.head())
 
+# Count the number of rows and columns
+print("Dataframe shape:", df.shape)
+
+# Get numerical columns
+num_columns = df.select_dtypes(include=[np.number]).columns
+print("Numerical columns:", num_columns)
+
+# Get categorical columns
+cat_columns = df.select_dtypes(include= 'object').columns
+print("Categorical columns:", cat_columns)
+
+
 # Print unique values for non numerical columns
 for col in df_cleaned.columns:
     if df_cleaned[col].dtype == 'object': # Categorical columns
@@ -50,14 +62,18 @@ for col in df_cleaned.columns:
 graphics = Graphics(df_cleaned)
 
 # Divide the columns into 3 quarters to show histograms and prevent overlapping
-f_quarter_columns = df_cleaned.columns[1:4] # test column division
-s_quarter_columns = df_cleaned.columns[4:7]
-t_quarter_columns = df_cleaned.columns[7:10]
+first_six_cols = df_cleaned.columns[:6]
+second_six_cols = df_cleaned.columns[6:12]
+third_six_cols = df_cleaned.columns[12:18]
+fourth_six_cols = df_cleaned.columns[18:24]
+fifth_six_cols = df_cleaned.columns[24:30]
 
 # Show histograms
-graphics.show_histograms(f_quarter_columns)
-graphics.show_histograms(s_quarter_columns)
-graphics.show_histograms(t_quarter_columns)
+graphics.show_histograms(first_six_cols)
+graphics.show_histograms(second_six_cols)
+graphics.show_histograms(third_six_cols)
+graphics.show_histograms(fourth_six_cols)
+graphics.show_histograms(fifth_six_cols)
 
 # Convert object columns to numeric codes
 # Encoding guide:
@@ -68,6 +84,6 @@ graphics.show_histograms(t_quarter_columns)
 # Employment status: Employed = 0, Unemployed = 1, Retired = 2, Student = 3
 # Smoking status: Never = 0, Former = 1, Current = 2
 # Diabetes stage: Type 2 = 0, No Diabetes = 1, Pre-Diabetes = 2, Gestational = 3, Type 1 = 4
-#for col in df_cleaned.columns:
-#    if df_cleaned[col].dtype == 'object':
-#        df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
+for col in df_cleaned.columns:
+    if df_cleaned[col].dtype == 'object':
+        df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
