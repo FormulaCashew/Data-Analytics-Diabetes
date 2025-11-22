@@ -68,9 +68,13 @@ class Graphics:
     def show_correlation_matrix_all(self):
         if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
-        corr_matrix = self.df.corr()
-        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
-        plt.show()
+        if num_cols > 10:
+            # Show only colors
+            print("Too many columns to show correlation matrix, showing only colors")
+            self.heatmap(self.df.columns)
+        else:
+            # Show correlation matrix
+            self.show_correlation_matrix(self.df.columns)
     
     def show_scatter_matrix(self, columns, cols_per_row=3):
         '''
