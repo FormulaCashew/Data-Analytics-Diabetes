@@ -9,9 +9,16 @@ class Graphics:
     def show_histograms(self, columns):
         self.df[columns].hist(bins=50, figsize=(20,15))
         plt.show()
+    def show_histograms_all(self):
+        self.df.hist(bins=50, figsize=(20,15))
+        plt.show()
     
     def show_correlation_matrix(self, columns):
         corr_matrix = self.df[columns].corr()
+        sns.heatmap(corr_matrix, annot=True)
+        plt.show()
+    def show_correlation_matrix_all(self):
+        corr_matrix = self.df.corr()
         sns.heatmap(corr_matrix, annot=True)
         plt.show()
     
