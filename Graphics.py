@@ -126,5 +126,14 @@ class Graphics:
         '''
         if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
-        sns.heatmap(self.df[columns].corr(), cmap='coolwarm')
+        
+        # Calculate figure size based on number of columns
+        n = len(columns)
+        figsize = (max(10, n * 0.6), max(8, n * 0.5))
+        
+        plt.figure(figsize=figsize)
+        sns.heatmap(self.df[columns].corr(), cmap='coolwarm', xticklabels=True, yticklabels=True)
+        plt.xticks(rotation=45, ha='right')
+        plt.yticks(rotation=0)
+        plt.tight_layout()
         plt.show()
