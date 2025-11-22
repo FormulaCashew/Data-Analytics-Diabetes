@@ -37,6 +37,16 @@ exclusions = "diabetes_risk_score"
 df_cleaned = df.drop(exclusions, axis=1)
 print(df_cleaned.head())
 
-# Print histograms
+# Convert object columns to numeric codes
+for col in df_cleaned.columns:
+    if df_cleaned[col].dtype == 'object':
+        df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
+
+
+# Create Graphics object from cleaned columns
 graphics = Graphics(df_cleaned)
-graphics.show_histograms()
+
+# Divide the columns into 3 quarters to show histograms and prevent overlapping
+f_quarter_columns = df_cleaned.columns[1:4] # test column division
+# Show histograms
+graphics.show_histograms(f_quarter_columns)
