@@ -8,6 +8,17 @@ class Graphics:
         self.df = df
     
     def show_histograms(self, columns=None, cols_per_row=3):
+        '''
+        Function to show histograms for the given columns
+        Accepts both numerical and categorical columns
+        
+        Parameters:
+        columns: list of columns to show histograms for
+        cols_per_row: number of columns per row
+        
+        Returns:
+        None
+        '''
         sns.set(style="whitegrid")
         if columns is None:
             columns = self.df.columns
@@ -39,6 +50,18 @@ class Graphics:
         plt.show()
     
     def show_correlation_matrix(self, columns):
+        '''
+        Function to show correlation matrix for the given columns
+        Values given must be numerical
+        
+        Parameters:
+        columns: list of columns to show correlation matrix for
+        
+        Returns:
+        None
+        '''
+        if not all(self.df[col].dtype == 'float64' or self.df[col].dtype == 'int64' for col in columns):
+            raise ValueError("All columns must be numerical")
         corr_matrix = self.df[columns].corr()
         sns.heatmap(corr_matrix, annot=True)
         plt.show()
@@ -48,10 +71,34 @@ class Graphics:
         plt.show()
     
     def show_scatter_matrix(self, columns):
+        '''
+        Function to show scatter matrix for the given columns
+        Values given must be numerical
+        
+        Parameters:
+        columns: list of columns to show scatter matrix for
+        
+        Returns:
+        None
+        '''
+        if not all(self.df[col].dtype == 'float64' or self.df[col].dtype == 'int64' for col in columns):
+            raise ValueError("All columns must be numerical")
         sns.pairplot(self.df)
         plt.show()
 
     def show_boxplots(self, columns):
+        '''
+        Function to show boxplots for the given columns
+        Values given must be numerical
+        
+        Parameters:
+        columns: list of columns to show boxplots for
+        
+        Returns:
+        None
+        '''
+        if not all(self.df[col].dtype == 'float64' or self.df[col].dtype == 'int64' for col in columns):
+            raise ValueError("All columns must be numerical")
         self.df[columns].boxplot(figsize=(20,15))
         plt.show()
     
@@ -61,5 +108,17 @@ class Graphics:
         plt.show()
     
     def heatmap(self, columns):
+        '''
+        Function to show heatmap for the given columns
+        Values given must be numerical
+        
+        Parameters:
+        columns: list of columns to show heatmap for
+        
+        Returns:
+        None
+        '''
+        if not all(self.df[col].dtype == 'float64' or self.df[col].dtype == 'int64' for col in columns):
+            raise ValueError("All columns must be numerical")
         sns.heatmap(self.df[columns].corr(), annot=True)
         plt.show()
