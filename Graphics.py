@@ -66,9 +66,9 @@ class Graphics:
         sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
         plt.show()
     def show_correlation_matrix_all(self):
-        if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
+        if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in self.df.columns):
             raise ValueError("All columns must be numerical")
-        if num_cols > 10:
+        if len(self.df.columns) > 10:
             # Show only colors
             print("Too many columns to show correlation matrix, showing only colors")
             self.heatmap(self.df.columns)
@@ -87,7 +87,7 @@ class Graphics:
         Returns:
         None
         '''
-        if not all(self.df[col].dtype == 'float64' or self.df[col].dtype == 'int64' for col in columns):
+        if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in self.df.columns):
             raise ValueError("All columns must be numerical")
         sns.pairplot(self.df[columns])
         plt.show()
@@ -103,7 +103,7 @@ class Graphics:
         Returns:
         None
         '''
-        if not all(self.df[col].dtype == 'float64' or self.df[col].dtype == 'int64' for col in columns):
+        if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
         self.df[columns].boxplot(figsize=(20,15))
         plt.show()
@@ -124,7 +124,7 @@ class Graphics:
         Returns:
         None
         '''
-        if not all(self.df[col].dtype == 'float64' or self.df[col].dtype == 'int64' for col in columns):
+        if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
-        sns.heatmap(self.df[columns].corr(), annot=True, cmap='coolwarm')
+        sns.heatmap(self.df[columns].corr(), cmap='coolwarm')
         plt.show()
