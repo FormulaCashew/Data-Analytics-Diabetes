@@ -46,6 +46,19 @@ for col in df_cleaned.columns:
     if df_cleaned[col].dtype == 'object': # Categorical columns
         print(f"Unique values for {col}: {df_cleaned[col].unique()}")
 
+# Create Graphics object from cleaned columns
+graphics = Graphics(df_cleaned)
+
+# Divide the columns into 3 quarters to show histograms and prevent overlapping
+f_quarter_columns = df_cleaned.columns[1:4] # test column division
+s_quarter_columns = df_cleaned.columns[4:7]
+t_quarter_columns = df_cleaned.columns[7:10]
+
+# Show histograms
+graphics.show_histograms(f_quarter_columns)
+graphics.show_histograms(s_quarter_columns)
+graphics.show_histograms(t_quarter_columns)
+
 # Convert object columns to numeric codes
 # Encoding guide:
 # Gender: Male = 0, Female = 1, Other = 2
@@ -55,16 +68,6 @@ for col in df_cleaned.columns:
 # Employment status: Employed = 0, Unemployed = 1, Retired = 2, Student = 3
 # Smoking status: Never = 0, Former = 1, Current = 2
 # Diabetes stage: Type 2 = 0, No Diabetes = 1, Pre-Diabetes = 2, Gestational = 3, Type 1 = 4
-for col in df_cleaned.columns:
-    if df_cleaned[col].dtype == 'object':
-        df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
-
-
-# Create Graphics object from cleaned columns
-graphics = Graphics(df_cleaned)
-
-
-# Divide the columns into 3 quarters to show histograms and prevent overlapping
-f_quarter_columns = df_cleaned.columns[1:4] # test column division
-# Show histograms
-graphics.show_histograms(f_quarter_columns)
+#for col in df_cleaned.columns:
+#    if df_cleaned[col].dtype == 'object':
+#        df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
