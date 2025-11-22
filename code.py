@@ -37,6 +37,11 @@ exclusions = "diabetes_risk_score"
 df_cleaned = df.drop(exclusions, axis=1)
 print(df_cleaned.head())
 
+# Print unique values for non numerical columns
+for col in df_cleaned.columns:
+    if df_cleaned[col].dtype == 'object': # Categorical columns
+        print(f"Unique values for {col}: {df_cleaned[col].unique()}")
+
 # Convert object columns to numeric codes
 for col in df_cleaned.columns:
     if df_cleaned[col].dtype == 'object':
