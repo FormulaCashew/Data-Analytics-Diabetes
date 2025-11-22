@@ -73,7 +73,7 @@ class Graphics:
             print("Too many columns to show correlation matrix, showing only colors")
             self.heatmap(self.df.columns)
         else:
-            # Show correlation matrix
+            # Show correlation matrix for all columns
             self.show_correlation_matrix(self.df.columns)
     
     def show_scatter_matrix(self, columns, cols_per_row=3):

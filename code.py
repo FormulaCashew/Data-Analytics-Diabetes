@@ -105,11 +105,13 @@ fifth_six_cols = df_cleaned.columns[24:30]
 graphics_num_encoded = Graphics(df_cleaned)
 
 # Show correlation matrix
-graphics_num_encoded.show_correlation_matrix(first_six_cols)
-graphics_num_encoded.show_correlation_matrix(second_six_cols)
-graphics_num_encoded.show_correlation_matrix(third_six_cols)
-graphics_num_encoded.show_correlation_matrix(fourth_six_cols)
-graphics_num_encoded.show_correlation_matrix(fifth_six_cols)
+if False: # Toggle to show correlation matrix
+    graphics_num_encoded.show_correlation_matrix(first_six_cols)
+    graphics_num_encoded.show_correlation_matrix(second_six_cols)
+    graphics_num_encoded.show_correlation_matrix(third_six_cols)
+    graphics_num_encoded.show_correlation_matrix(fourth_six_cols)
+    graphics_num_encoded.show_correlation_matrix(fifth_six_cols)
+graphics_num_encoded.show_correlation_matrix_all()
 
 # Show scatter matrix
 #graphics_num_encoded.show_scatter_matrix(first_six_cols)
