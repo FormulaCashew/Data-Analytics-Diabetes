@@ -109,8 +109,11 @@ class Graphics:
         plt.show()
     
     def compare_hist(self, column1, column2):
-        self.df[column1].hist(bins=50, figsize=(20,15))
-        self.df[column2].hist(bins=50, figsize=(20,15))
+        plt.figure(figsize=(20,15))
+        plt.subplot(1,2,1)
+        self.df[column1].hist(bins=50)
+        plt.subplot(1,2,2)
+        self.df[column2].hist(bins=50)
         plt.show()
     
     def heatmap(self, columns, cols_per_row=3):
