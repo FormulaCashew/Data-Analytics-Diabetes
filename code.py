@@ -7,6 +7,8 @@ import shutil
 import kagglehub
 from Class_implementations import Graphics, DataProcessor
 
+
+################################ Data Loading ################################
 csv_name = "diabetes_dataset.csv"
 
 # Download dataset if it doesn't exist
@@ -26,19 +28,25 @@ else:
 # Read the data
 df = pd.read_csv(csv_name)
  
+
+################################ Initial Data Cleaning ################################
+
 # Print the first 5 rows of the DataFrame
 print(df.head())
 
 # Calculate the number of missing values in each column
 if df.isnull().sum().sum() > 0:
     print(df.isnull().sum())
+    drop_rows = True
 else:
     print("No missing values in the dataset")
+    drop_rows = False
 
-# Drop rows with missing values (The dataset used has no missing values so this is not needed)
-for row in df.index:
-    if df.loc[row].isnull().sum() > 0:
-        df = df.drop(row)
+# Drop rows with missing values if necessary
+if drop_rows: 
+    for row in df.index:
+        if df.loc[row].isnull().sum() > 0:
+            df = df.drop(row)
 
 # Remove diabetes risk column as it may be a target variable
 df_cleaned = df.drop("diabetes_risk_score", axis=1)
@@ -55,23 +63,27 @@ print("Numerical columns:", num_columns)
 cat_columns = df_cleaned.select_dtypes(include= 'object').columns
 print("Categorical columns:", cat_columns)
 
-
 # Print unique values for non numerical columns
 for col in df_cleaned.columns:
     if df_cleaned[col].dtype == 'object': # Categorical columns
         print(f"Unique values for {col}: {df_cleaned[col].unique()}")
+
+################################ EDA Visualization #################################
 
 # Create Graphics object from cleaned columns
 processor = DataProcessor(df_cleaned)
 df_subsampled = processor.subsample_data(fraction=0.05)
 graphics = Graphics(df_subsampled)
 
-# Divide the columns into 3 quarters to show histograms and prevent overlapping
-first_six_cols = df_subsampled.columns[:6]
-second_six_cols = df_subsampled.columns[6:12]
-third_six_cols = df_subsampled.columns[12:18]
-fourth_six_cols = df_subsampled.columns[18:24]
-fifth_six_cols = df_subsampled.columns[24:30]
+important_attributes = ["age", "bmi", "glucose_fasting", "hba1c", "cholesterol_total"]
+
+# Get numerical columns and divide them into groups of 6
+first_six_cols = df_subsampled.select_dtypes(include= np.number).columns[:6]
+second_six_cols = df_subsampled.select_dtypes(include= np.number).columns[6:12]
+third_six_cols = df_subsampled.select_dtypes(include= np.number).columns[12:18]
+fourth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[18:24]
+fifth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[24:30]
+important_columns = df_subsampled[important_attributes].columns
 
 # Show histograms
 if False : # Toggle to show histograms
@@ -80,13 +92,30 @@ if False : # Toggle to show histograms
     graphics.show_histograms(third_six_cols)
     graphics.show_histograms(fourth_six_cols)
     graphics.show_histograms(fifth_six_cols)
+graphics.show_histograms(important_columns)
 
-########################### Normalization ###########################
+# Show correlation matrix
+if False:
+    graphics.show_correlation_matrix(num_columns)
+graphics.show_correlation_matrix(important_columns)
 
-# Normalize data
+# Show scatter matrix
+if False:
+    graphics.show_scatter_matrix(num_columns[:5])
+graphics.show_scatter_matrix(important_columns)
+
+# Show boxplots to check for outliers
+if True:
+    graphics.show_boxplots(important_columns)
+    
+
+################################ Normalization ################################
+
+# Normalize numerical data
+processor = DataProcessor(df_cleaned)
 norm_df = processor.normalize_data(df_cleaned.select_dtypes(include=[np.number]))
 
-########################### Encoding ###########################
+################################ Encoding #####################################
 
 # Convert object columns to numeric codes
 # Encoding guide:
@@ -104,32 +133,9 @@ for col in norm_df.columns:
 # Print dtypes to check if encoding was successful
 print(norm_df.dtypes)
 
-# Divide again columns as they need to be updated after encoding
-first_six_cols = norm_df.columns[:6]
-second_six_cols = norm_df.columns[6:12]
-third_six_cols = norm_df.columns[12:18]
-fourth_six_cols = norm_df.columns[18:24]
-fifth_six_cols = norm_df.columns[24:30]
-
 # Update objects from class with cleaned columns
 df_subsampled_num_encoded = processor.subsample_data(fraction=0.05)
-graphics_num_encoded = Graphics(df_subsampled_num_encoded)
 data_processor = DataProcessor(df_subsampled_num_encoded)
-
-#Test nromalization
-graphics_num_encoded.show_histograms(["age"])
-
-# Show correlation matrix
-if False: # Toggle to show correlation matrix
-    graphics_num_encoded.show_correlation_matrix(first_six_cols)
-    graphics_num_encoded.show_correlation_matrix(second_six_cols)
-    graphics_num_encoded.show_correlation_matrix(third_six_cols)
-    graphics_num_encoded.show_correlation_matrix(fourth_six_cols)
-    graphics_num_encoded.show_correlation_matrix(fifth_six_cols)
-    graphics_num_encoded.show_correlation_matrix_all()
-
-# Scatter matrix with certain columns
-# graphics_num_encoded.show_scatter_matrix(["cholesterol_total", "hdl_cholesterol", "ldl_cholesterol", "triglycerides", "diagnosed_diabetes"])
 
 # Show kmeans clustering
 # data_processor.plot_kmeans_clustering(["cholesterol_total","diagnosed_diabetes"])
