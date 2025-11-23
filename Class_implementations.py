@@ -68,9 +68,7 @@ class Graphics:
         if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
         if len(columns) > 10:
-            # Show only colors
-            print("Too many columns, showing only colors")
-            self.heatmap(columns)
+            print("Too many columns, may overlap")
         elif len(columns) == 0:
             print("No columns provided")
             return
