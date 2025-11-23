@@ -131,7 +131,6 @@ class Graphics:
         for i, col in enumerate(columns):
             ax = axes[i]
             sns.boxplot(x=col, data=self.df, ax=ax)
-            ax.set_title(col)
             ax.set_xlabel(col)
             ax.set_ylabel("Frequency")
         plt.tight_layout()
