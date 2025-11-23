@@ -49,7 +49,6 @@ class Graphics:
 
         plt.tight_layout()
         plt.show()
-    
     def show_correlation_matrix(self, columns, cols_per_row=3):
         '''
         Function to show correlation matrix for the given columns
@@ -76,7 +75,6 @@ class Graphics:
         else:
             # Show correlation matrix for all columns
             self.show_correlation_matrix(self.df.columns)
-    
     def show_scatter_matrix(self, columns, cols_per_row=3):
         '''
         Function to show scatter matrix for the given columns
@@ -92,7 +90,6 @@ class Graphics:
             raise ValueError("All columns must be numerical")
         sns.pairplot(self.df[columns])
         plt.show()
-
     def show_boxplots(self, columns, cols_per_row=3):
         '''
         Function to show boxplots for the given columns
@@ -108,7 +105,6 @@ class Graphics:
             raise ValueError("All columns must be numerical")
         self.df[columns].boxplot(figsize=(20,15))
         plt.show()
-    
     def compare_hist(self, column1, column2):
         plt.figure(figsize=(20,15))
         plt.subplot(1,2,1)
@@ -116,7 +112,6 @@ class Graphics:
         plt.subplot(1,2,2)
         self.df[column2].hist(bins=50)
         plt.show()
-    
     def heatmap(self, columns, cols_per_row=3):
         '''
         Function to show heatmap for the given columns
@@ -181,7 +176,8 @@ class DataProcessor:
         selected_indexes = random.sample(indexes, k)
         
         # Using iloc to select rows based on the manually selected indexes
+        print("Subsampled down to {} rows from {} rows".format(k, total_rows))
         return self.df.iloc[selected_indexes].reset_index(drop=True)
 
-      
+    
 

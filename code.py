@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import shutil
 import kagglehub
-from Graphics import Graphics
+from Class_implementations import Graphics, DataProcessor
 
 csv_name = "diabetes_dataset.csv"
 
@@ -62,17 +62,19 @@ for col in df_cleaned.columns:
         print(f"Unique values for {col}: {df_cleaned[col].unique()}")
 
 # Create Graphics object from cleaned columns
-graphics = Graphics(df_cleaned)
+processor = DataProcessor(df_cleaned)
+df_subsampled = processor.subsample_data(fraction=0.05)
+graphics = Graphics(df_subsampled)
 
 # Divide the columns into 3 quarters to show histograms and prevent overlapping
-first_six_cols = df_cleaned.columns[:6]
-second_six_cols = df_cleaned.columns[6:12]
-third_six_cols = df_cleaned.columns[12:18]
-fourth_six_cols = df_cleaned.columns[18:24]
-fifth_six_cols = df_cleaned.columns[24:30]
+first_six_cols = df_subsampled.columns[:6]
+second_six_cols = df_subsampled.columns[6:12]
+third_six_cols = df_subsampled.columns[12:18]
+fourth_six_cols = df_subsampled.columns[18:24]
+fifth_six_cols = df_subsampled.columns[24:30]
 
 # Show histograms
-if False : # Toggle to show histograms
+if True : # Toggle to show histograms
     graphics.show_histograms(first_six_cols)
     graphics.show_histograms(second_six_cols)
     graphics.show_histograms(third_six_cols)
@@ -105,7 +107,8 @@ fourth_six_cols = df_cleaned.columns[18:24]
 fifth_six_cols = df_cleaned.columns[24:30]
 
 # Create new Graphics object from cleaned columns
-graphics_num_encoded = Graphics(df_cleaned)
+df_subsampled_num_encoded = processor.subsample_data(fraction=0.1)
+graphics_num_encoded = Graphics(df_subsampled_num_encoded)
 
 # Show correlation matrix
 if False: # Toggle to show correlation matrix
