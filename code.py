@@ -133,15 +133,19 @@ norm_df = processor.normalize_data(df_dropped.select_dtypes(include=[np.number])
 # Employment status: Employed = 0, Unemployed = 1, Retired = 2, Student = 3
 # Smoking status: Never = 0, Former = 1, Current = 2
 # Diabetes stage: Type 2 = 0, No Diabetes = 1, Pre-Diabetes = 2, Gestational = 3, Type 1 = 4
+encoded_df = norm_df.copy()
 for col in norm_df.columns:
     if norm_df[col].dtype == 'object':
-        norm_df[col] = norm_df[col].astype('category').cat.codes
+        encoded_df[col] = norm_df[col].astype('category').cat.codes
 
 # Print dtypes to check if encoding was successful
-print(norm_df.dtypes)
+print(encoded_df.dtypes)
+
+# Update classes
+processor = DataProcessor(encoded_df)
+graphics = Graphics(encoded_df) # Update Graphics object with encoded data
 
 # check for correlation matrix values now for categorical data
-graphics = Graphics(norm_df) # Update Graphics object with encoded data
 cols_to_check = cat_columns.tolist() + ['diagnosed_diabetes']
 print("cols_to_check:", cols_to_check)
 graphics.show_correlation_matrix(cols_to_check)
