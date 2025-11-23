@@ -76,8 +76,8 @@ if False:
     graphics_total = Graphics(df_dropped) # Important to use the total dataset to show correlation matrix
     graphics_total.show_correlation_matrix(num_columns)
 
-# Based on correlation matrix above, select important numerical attributes with correlation > 0.1
-important_attributes = ["age", "family_history_diabetes", "bmi", "glucose_fasting", "glucose_postprandial", "hba1c", "systolic_bp"]
+# Based on correlation matrix above, select important numerical attributes with correlation > 0.1, ordered by correlation
+important_attributes = ["hba1c", "glucose_postprandial", "glucose_fasting", "family_history_diabetes", "age", "bmi", "systolic_bp"]
 important_attributes_w_target = important_attributes + ["diagnosed_diabetes"]
 
 important_columns = df_subsampled[important_attributes].columns
@@ -111,9 +111,12 @@ print(norm_df['age'].head())
 
 ################################ Encoding #####################################
 
+# Drop rows with gender = Other as it not an useful feature
+norm_df = norm_df[norm_df['gender'] != 'Other']
+
 # Convert object columns to numeric codes
 # Encoding guide:
-# Gender: Male = 0, Female = 1, Other = 2
+# Gender: Male = 0, Female = 1
 # Ethnicity: Asian = 0, White = 1, Hispanic = 2, Black = 3, Other = 4
 # Education level: Highschool = 0, Graduate = 1, Postgraduate = 2, No formal = 3
 # Income level: Lower-Middle = 0, Middle = 1, Low = 2, Upper-Middle = 3, High = 4
@@ -140,9 +143,33 @@ print("cols_to_check:", cols_to_check)
 graphics.show_correlation_matrix(cols_to_check)
 # After encoding, correlation matrix values show little correlation with target variable
 
+graphics.compare_hist("glucose_fasting", "glucose_postprandial")
+################# Histograms #################
+# Histogram of education level vs diagnosed_diabetes
+graphics.show_hist_axis("education_level", "diagnosed_diabetes")
+# It shows that lower education level has higher count of diagnosed diabetes
+
+# Histogram of income level vs diagnosed_diabetes
+graphics.show_hist_axis("income_level", "diagnosed_diabetes")
+# Shows that higher income level has higher count of diagnosed diabetes, but may be due to having the chance to be diagnosed
+
+# Histogram of employment status vs diagnosed_diabetes
+graphics.show_hist_axis("employment_status", "diagnosed_diabetes")
+# Shows that employed has higher count of diagnosed diabetes
+
+# Histogram of smoking status vs diagnosed_diabetes
+graphics.show_hist_axis("smoking_status", "diagnosed_diabetes")
+# Shows that current smoking has higher count of diagnosed diabetes
+
+################# KMeans Clustering #################
 # Update objects from class with cleaned columns
-df_subsampled_num_encoded = processor.subsample_data(fraction=0.05)
+df_subsampled_num_encoded = processor.subsample_data(fraction=0.1)
 data_processor = DataProcessor(df_subsampled_num_encoded)
 
 # Show kmeans clustering
-# data_processor.plot_kmeans_clustering(["cholesterol_total","diagnosed_diabetes"])
+# Using hba1c and glucose fasting as they have the highest correlation with target variable
+data_processor.plot_kmeans_clustering(["hba1c","glucose_fasting"], n_clusters=2)
+# Now test for hba1c and glucose_postprandial
+data_processor.plot_kmeans_clustering(["hba1c","glucose_postprandial"], n_clusters=2)
+# Now test for glucose fasting and glucose_postprandial
+data_processor.plot_kmeans_clustering(["glucose_fasting","glucose_postprandial"], n_clusters=2)
