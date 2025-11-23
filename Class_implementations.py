@@ -167,7 +167,7 @@ class Graphics:
 
 class DataProcessor:
     def __init__(self, df):
-        self.df = df
+        self.df = df.copy()
 
     def subsample_data(self, samples=None, fraction=None, random_state=None):
         """
@@ -205,7 +205,7 @@ class DataProcessor:
         
         # Using iloc to select rows based on the manually selected indexes
         print("Subsampled down to {} rows from {} rows".format(k, total_rows))
-        return self.df.iloc[selected_indexes].reset_index(drop=True)
+        return self.df.iloc[selected_indexes].reset_index(drop=True).copy()
 
     def normalize_data(self, columns):
         """
@@ -219,7 +219,7 @@ class DataProcessor:
         """
         for col in columns:
             self.df[col] = (self.df[col] - self.df[col].min()) / (self.df[col].max() - self.df[col].min())  # Normalize values to 0-1
-        return self.df
+        return self.df.copy()
 
     def get_data(self):
         """
@@ -228,7 +228,7 @@ class DataProcessor:
         Returns:
             Dataframe
         """
-        return self.df
+        return self.df.copy()
     
     def plot_kmeans_clustering(self, columns, n_clusters=3, x_col=None, y_col=None):
         """
@@ -295,7 +295,7 @@ class DataProcessor:
         test_indexes = indexes[split_index:]
         
         # Assign rows to training and testing dataframes
-        train_df = self.df.iloc[train_indexes].reset_index(drop=True)
-        test_df = self.df.iloc[test_indexes].reset_index(drop=True)
+        train_df = self.df.iloc[train_indexes].reset_index(drop=True).copy()
+        test_df = self.df.iloc[test_indexes].reset_index(drop=True).copy()
         
         return train_df, test_df 
