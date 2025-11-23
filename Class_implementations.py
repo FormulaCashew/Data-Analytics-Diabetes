@@ -14,9 +14,9 @@ class Graphics:
         Function to show histograms for the given columns
         Accepts both numerical and categorical columns
         
-        Parameters:
-        columns: list of columns to show histograms for
-        cols_per_row: number of columns per row
+        Args: 
+            columns: list of columns to show histograms for
+            cols_per_row: number of columns per row
         
         Returns:
         None
@@ -59,8 +59,8 @@ class Graphics:
         Function to show correlation matrix for the given columns
         Values given must be numerical
         
-        Parameters:
-        columns: list of columns to show correlation matrix for
+        Args: 
+            columns: list of columns to show correlation matrix for
         
         Returns:
         None
@@ -90,11 +90,11 @@ class Graphics:
         Function to show scatter matrix for the given columns
         Values given must be numerical
         
-        Parameters:
-        columns: list of columns to show scatter matrix for
+        Args: 
+            columns: list of columns to show scatter matrix for
         
         Returns:
-        None
+            None
         '''
         if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
@@ -111,12 +111,12 @@ class Graphics:
         Function to show boxplots for the given columns
         Values given must be numerical
         
-        Parameters:
-        columns: list of columns to show boxplots
-        cols_per_row: number of columns per row
+        Args: 
+            columns: list of columns to show boxplots
+            cols_per_row: number of columns per row
         
         Returns:
-        None
+            None
         '''
         if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
@@ -145,8 +145,8 @@ class Graphics:
         Function to show heatmap for the given columns
         Values given must be numerical
         
-        Parameters:
-        columns: list of columns to show heatmap for
+        Args: 
+            columns: list of columns to show heatmap for
         
         Returns:
         None
@@ -173,10 +173,10 @@ class DataProcessor:
         """
         Subsample the dataset
         
-        Parameters:
-        samples: Number of samples to return
-        fraction: Fraction of axis items to return
-        random_state: Seed for random number generator
+        Args: 
+            samples: Number of samples to return
+            fraction: Fraction of axis items to return
+            random_state: Seed for random number generator
         
         Returns:
         Subsampled dataframe
@@ -211,11 +211,11 @@ class DataProcessor:
         """
         Normalizes the data in the given columns values 0 to 1
         
-        Parameters:
-        columns: list of columns to normalize
+        Args: 
+            columns: list of columns to normalize
         
         Returns:
-        Dataframe with normalized columns
+            Dataframe with normalized columns
         """
         for col in columns:
             self.df[col] = (self.df[col] - self.df[col].min()) / (self.df[col].max() - self.df[col].min())  # Normalize values to 0-1
@@ -226,7 +226,7 @@ class DataProcessor:
         Returns the dataframe
         
         Returns:
-        Dataframe
+            Dataframe
         """
         return self.df
     
@@ -234,14 +234,14 @@ class DataProcessor:
         """
         Performs KMeans clustering and displays a scatter plot encoded by cluster color
         
-        Parameters:
-        columns: list of columns to use for clustering
-        n_clusters: number of clusters
-        x_col: column for x-axis (optional, defaults to first column in columns)
-        y_col: column for y-axis (optional, defaults to second column in columns)
+        Args: 
+            columns: list of columns to use for clustering
+            n_clusters: number of clusters
+            x_col: column for x-axis (optional, defaults to first column in columns)
+            y_col: column for y-axis (optional, defaults to second column in columns)
         
         Returns:
-        None
+            None
         """
         if len(columns) < 2:
              raise ValueError("Need at least 2 columns for clustering and plotting")
@@ -271,12 +271,12 @@ class DataProcessor:
         """
         Splits the dataset into training and testing sets
         
-        Parameters:
-        test_size: Proportion of the dataset to include in the test split (0.0 to 1.0)
-        random_state: Seed for random number generator
+        Args: 
+            test_size: Proportion of the dataset to include in the test split (0.0 to 1.0)
+            random_state: Seed for random number generator
         
         Returns:
-        tuple: (train_df, test_df)
+            tuple: (train_df, test_df)
         """
         if random_state is not None:
             random.seed(random_state)
