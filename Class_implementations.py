@@ -3,6 +3,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import random
+from sklearn.cluster import KMeans
 
 class Graphics:
     def __init__(self, df):
@@ -179,5 +180,40 @@ class DataProcessor:
         print("Subsampled down to {} rows from {} rows".format(k, total_rows))
         return self.df.iloc[selected_indexes].reset_index(drop=True)
 
-    
+    def plot_kmeans_clustering(self, columns, n_clusters=3, x_col=None, y_col=None):
+        """
+        Performs KMeans clustering and displays a scatter plot encoded by cluster color
+        
+        Parameters:
+        columns: list of columns to use for clustering
+        n_clusters: number of clusters
+        x_col: column for x-axis (optional, defaults to first column in columns)
+        y_col: column for y-axis (optional, defaults to second column in columns)
+        
+        Returns:
+        None
+        """
+        if len(columns) < 2:
+             raise ValueError("Need at least 2 columns for clustering and plotting")
+
+        # Ensure data is numeric
+        data = self.df[columns].select_dtypes(include=[np.number])
+        if data.shape[1] != len(columns):
+             raise ValueError("All columns must be numerical for KMeans")
+
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+        labels = kmeans.fit_predict(data)
+        
+        if x_col is None:
+            x_col = columns[0]
+        if y_col is None:
+            y_col = columns[1]
+            
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x=self.df[x_col], y=self.df[y_col], hue=labels, palette='viridis')
+        plt.title(f'KMeans Clustering (k={n_clusters})')
+        plt.xlabel(x_col)
+        plt.ylabel(y_col)
+        plt.legend(title='Cluster')
+        plt.show() 
 
