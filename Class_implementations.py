@@ -217,3 +217,35 @@ class DataProcessor:
         plt.legend(title='Cluster')
         plt.show() 
 
+    def train_test_split(self, test_size=0.2, random_state=None):
+        """
+        Splits the dataset into training and testing sets
+        
+        Parameters:
+        test_size: Proportion of the dataset to include in the test split (0.0 to 1.0)
+        random_state: Seed for random number generator
+        
+        Returns:
+        tuple: (train_df, test_df)
+        """
+        if random_state is not None:
+            random.seed(random_state)
+            
+        total_rows = len(self.df)
+        indexes = list(range(total_rows))
+        
+        # Shuffle indexes
+        random.shuffle(indexes)
+        
+        # Calculate split index
+        split_index = int(total_rows * (1 - test_size))
+        
+        # Select indexes for training and testing
+        train_indexes = indexes[:split_index]
+        test_indexes = indexes[split_index:]
+        
+        # Assign rows to training and testing dataframes
+        train_df = self.df.iloc[train_indexes].reset_index(drop=True)
+        test_df = self.df.iloc[test_indexes].reset_index(drop=True)
+        
+        return train_df, test_df 
