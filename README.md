@@ -8,11 +8,12 @@ The data used for this analysis is not included in the repository to reduce the 
 
 ## Classes
 
-The code uses the following class:
+The code uses the following classes:
 
 - Graphics: A class that provides methods for visualizing data.
+- DataProcessor: A class that provides various methods for processing data.
 
-## Requirements 
+## Requirements
 
 To run this code run the following command:
 
