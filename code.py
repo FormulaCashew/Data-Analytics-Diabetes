@@ -35,21 +35,17 @@ df = pd.read_csv(csv_name)
 print(df.head())
 
 # Calculate the number of missing values in each column
-if df.isnull().sum().sum() > 0:
-    print(df.isnull().sum())
-    drop_rows = True
+missing_values = df.isnull().sum().sum()
+if missing_values > 0:
+    print(f"{missing_values} missing values in the dataset")
+    # Drop rows with missing values if necessary
+    df_dropped = df.dropna()
 else:
     print("No missing values in the dataset")
-    drop_rows = False
-
-# Drop rows with missing values if necessary
-if drop_rows: 
-    for row in df.index:
-        if df.loc[row].isnull().sum() > 0:
-            df = df.drop(row)
+    df_dropped = df.copy()
 
 # Remove diabetes risk column as it may be a target variable
-df_dropped = df.drop("diabetes_risk_score", axis=1)
+df_dropped = df_dropped.drop("diabetes_risk_score", axis=1)
 print("Cleaned dataframe:", df_dropped.head())
 
 # Count the number of rows and columns
@@ -72,30 +68,15 @@ for col in df_dropped.columns:
 
 # Create Graphics object from cleaned columns
 processor = DataProcessor(df_dropped)
-df_subsampled = processor.subsample_data(fraction=0.05)
+df_subsampled = processor.subsample_data(fraction=0.1)
 graphics = Graphics(df_subsampled)
-
-# Get numerical columns and divide them into groups of 6
-if False:
-    first_six_cols = df_subsampled.select_dtypes(include= np.number).columns[:6]
-    second_six_cols = df_subsampled.select_dtypes(include= np.number).columns[6:12]
-    third_six_cols = df_subsampled.select_dtypes(include= np.number).columns[12:18]
-    fourth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[18:24]
-    fifth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[24:30]
-
-# Show histograms
-    graphics.show_histograms(first_six_cols)
-    graphics.show_histograms(second_six_cols)
-    graphics.show_histograms(third_six_cols)
-    graphics.show_histograms(fourth_six_cols)
-    graphics.show_histograms(fifth_six_cols)
 
 # Show correlation matrix
 if False:
     graphics_total = Graphics(df_dropped) # Important to use the total dataset to show correlation matrix
     graphics_total.show_correlation_matrix(num_columns)
 
-# Based on correlation matrix, select important numerical attributes with correlation > 0.1
+# Based on correlation matrix above, select important numerical attributes with correlation > 0.1
 important_attributes = ["age", "family_history_diabetes", "bmi", "glucose_fasting", "glucose_postprandial", "hba1c", "systolic_bp"]
 important_attributes_w_target = important_attributes + ["diagnosed_diabetes"]
 
