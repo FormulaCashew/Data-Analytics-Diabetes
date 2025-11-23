@@ -180,6 +180,29 @@ class DataProcessor:
         print("Subsampled down to {} rows from {} rows".format(k, total_rows))
         return self.df.iloc[selected_indexes].reset_index(drop=True)
 
+    def normalize_data(self, columns):
+        """
+        Normalizes the data in the given columns values 0 to 1
+        
+        Parameters:
+        columns: list of columns to normalize
+        
+        Returns:
+        Dataframe with normalized columns
+        """
+        for col in columns:
+            self.df[col] = (self.df[col] - self.df[col].min()) / (self.df[col].max() - self.df[col].min())  # Normalize values to 0-1
+        return self.df
+
+    def get_data(self):
+        """
+        Returns the dataframe
+        
+        Returns:
+        Dataframe
+        """
+        return self.df
+    
     def plot_kmeans_clustering(self, columns, n_clusters=3, x_col=None, y_col=None):
         """
         Performs KMeans clustering and displays a scatter plot encoded by cluster color
