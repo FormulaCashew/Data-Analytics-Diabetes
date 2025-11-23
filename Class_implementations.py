@@ -134,11 +134,37 @@ class Graphics:
         plt.tight_layout()
         plt.show()
     def compare_hist(self, column1, column2):
+        '''
+        Function to compare histograms for the given columns, frequency of each column is shown
+        Values given must be numerical
+        
+        Args: 
+            column1: first column to compare
+            column2: second column to compare
+        
+        Returns:
+            None
+        '''
         plt.figure(figsize=(20,15))
-        plt.subplot(1,2,1)
         self.df[column1].hist(bins=50)
-        plt.subplot(1,2,2)
         self.df[column2].hist(bins=50)
+        plt.legend([column1, column2])
+        plt.show()
+    def show_hist_axis(self, x_axis, y_axis):
+        '''
+        Function to show histogram using x and y axis from columns of the dataframe
+        Values given must be numerical
+        
+        Args: 
+            x_axis: column to show histogram for
+            y_axis: column to show histogram for
+        
+        Returns:
+            None
+        '''
+        self.df[x_axis].hist(bins=50)
+        plt.xlabel(x_axis)
+        plt.ylabel(y_axis)
         plt.show()
     def heatmap(self, columns, cols_per_row=3):
         '''
