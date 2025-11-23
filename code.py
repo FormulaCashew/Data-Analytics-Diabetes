@@ -5,6 +5,7 @@ import pandas as pd
 import os
 import shutil
 import kagglehub
+from sklearn.metrics import confusion_matrix
 from Class_implementations import Graphics, DataProcessor, KNN
 
 
@@ -177,7 +178,10 @@ data_processor.plot_kmeans_clustering(["glucose_fasting","glucose_postprandial"]
 
 ####################################### Modeling #########################################
 
-train_df, test_df = processor.train_test_split(test_size=0.2)
+# IMPORTANT: Use 5% to 10% of the dataset for training and testing, knn is heavy and takes a lot of time to run
+subsampled_df = processor.subsample_data(fraction=0.05)
+knn_processor = DataProcessor(subsampled_df)
+train_df, test_df = knn_processor.train_test_split(test_size=0.2)
 
 knn = KNN(k=3)
 knn.store(train_df[important_attributes], train_df['diagnosed_diabetes'])
@@ -186,5 +190,4 @@ predictions = knn.predict(test_df[important_attributes])
 correct = sum(predictions == test_df['diagnosed_diabetes'])
 print(f"Accuracy: {correct/len(test_df)}")
 
-confusion_matrix = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
-print(confusion_matrix)
+knn.plot_confusion_matrix(test_df[important_attributes], test_df['diagnosed_diabetes'])

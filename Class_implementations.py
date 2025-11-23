@@ -5,6 +5,7 @@ import numpy as np
 import random
 from collections import Counter
 from sklearn.cluster import KMeans
+from sklearn.metrics import confusion_matrix
 
 class Graphics:
     def __init__(self, df):
@@ -386,8 +387,23 @@ class KNN:
         sorted_distances = sorted(distances, key=lambda x: x[0])
         nearest_neighbors = sorted_distances[:self._k] # get only the distances up to k
         nearest_neighbor_labels = [neighbor[1] for neighbor in nearest_neighbors]
-        survived = Counter(nearest_neighbor_labels).most_common(1)[0] # Check for most common output in the neighbors
-        return survived[0]
+        prediction = Counter(nearest_neighbor_labels).most_common(1)[0] # Check for most common output in the neighbors
+        return prediction[0]
+    
+    def plot_confusion_matrix(self, inputs, outputs):
+        """
+        Plots a confusion matrix for the given inputs and outputs
+        Args:
+            inputs (pandas.DataFrame): input data
+            outputs (pandas.DataFrame): output data
+        """
+        predictions = self.predict(inputs)
+        cm = confusion_matrix(outputs, predictions)
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+        plt.xlabel('Predicted')
+        plt.ylabel('Actual')
+        plt.show()
+        print(cm)
 
 
     @staticmethod
