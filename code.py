@@ -49,71 +49,78 @@ if drop_rows:
             df = df.drop(row)
 
 # Remove diabetes risk column as it may be a target variable
-df_cleaned = df.drop("diabetes_risk_score", axis=1)
-print("Cleaned dataframe:", df_cleaned.head())
+df_dropped = df.drop("diabetes_risk_score", axis=1)
+print("Cleaned dataframe:", df_dropped.head())
 
 # Count the number of rows and columns
-print("Dataframe shape:", df_cleaned.shape)
+print("Dataframe shape:", df_dropped.shape)
 
 # Get numerical columns
-num_columns = df_cleaned.select_dtypes(include=[np.number]).columns
+num_columns = df_dropped.select_dtypes(include=[np.number]).columns
 print("Numerical columns:", num_columns)
 
 # Get categorical columns
-cat_columns = df_cleaned.select_dtypes(include= 'object').columns
+cat_columns = df_dropped.select_dtypes(include= 'object').columns
 print("Categorical columns:", cat_columns)
 
 # Print unique values for non numerical columns
-for col in df_cleaned.columns:
-    if df_cleaned[col].dtype == 'object': # Categorical columns
-        print(f"Unique values for {col}: {df_cleaned[col].unique()}")
+for col in df_dropped.columns:
+    if df_dropped[col].dtype == 'object': # Categorical columns
+        print(f"Unique values for {col}: {df_dropped[col].unique()}")
 
 ################################ EDA Visualization #################################
 
 # Create Graphics object from cleaned columns
-processor = DataProcessor(df_cleaned)
+processor = DataProcessor(df_dropped)
 df_subsampled = processor.subsample_data(fraction=0.05)
 graphics = Graphics(df_subsampled)
 
-important_attributes = ["age", "bmi", "glucose_fasting", "hba1c", "cholesterol_total"]
-
 # Get numerical columns and divide them into groups of 6
-first_six_cols = df_subsampled.select_dtypes(include= np.number).columns[:6]
-second_six_cols = df_subsampled.select_dtypes(include= np.number).columns[6:12]
-third_six_cols = df_subsampled.select_dtypes(include= np.number).columns[12:18]
-fourth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[18:24]
-fifth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[24:30]
-important_columns = df_subsampled[important_attributes].columns
+if False:
+    first_six_cols = df_subsampled.select_dtypes(include= np.number).columns[:6]
+    second_six_cols = df_subsampled.select_dtypes(include= np.number).columns[6:12]
+    third_six_cols = df_subsampled.select_dtypes(include= np.number).columns[12:18]
+    fourth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[18:24]
+    fifth_six_cols = df_subsampled.select_dtypes(include= np.number).columns[24:30]
 
 # Show histograms
-if False : # Toggle to show histograms
     graphics.show_histograms(first_six_cols)
     graphics.show_histograms(second_six_cols)
     graphics.show_histograms(third_six_cols)
     graphics.show_histograms(fourth_six_cols)
     graphics.show_histograms(fifth_six_cols)
-graphics.show_histograms(important_columns)
 
 # Show correlation matrix
 if False:
-    graphics.show_correlation_matrix(num_columns)
-graphics.show_correlation_matrix(important_columns)
+    graphics_total = Graphics(df_dropped) # Important to use the total dataset to show correlation matrix
+    graphics_total.show_correlation_matrix(num_columns)
+
+# Based on correlation matrix, select important numerical attributes with correlation > 0.1
+important_attributes = ["age", "family_history_diabetes", "bmi", "glucose_fasting", "glucose_postprandial", "hba1c", "systolic_bp"]
+important_attributes_w_target = important_attributes + ["diagnosed_diabetes"]
+
+important_columns = df_subsampled[important_attributes].columns
+important_columns_w_target = df_subsampled[important_attributes_w_target].columns
+
+# See distribution of important attributes
+graphics.show_histograms(important_columns)
+# Confirm correlation matrix values
+graphics.show_correlation_matrix(important_columns_w_target)
 
 # Show scatter matrix
 if False:
-    graphics.show_scatter_matrix(num_columns[:5])
-graphics.show_scatter_matrix(important_columns)
+    graphics.show_scatter_matrix(important_columns_w_target)
 
 # Show boxplots to check for outliers
-if True:
+if False:
     graphics.show_boxplots(important_columns)
     
 
 ################################ Normalization ################################
 
 # Normalize numerical data
-processor = DataProcessor(df_cleaned)
-norm_df = processor.normalize_data(df_cleaned.select_dtypes(include=[np.number]))
+processor = DataProcessor(df_dropped)
+norm_df = processor.normalize_data(df_dropped.select_dtypes(include=[np.number]))
 
 ################################ Encoding #####################################
 
@@ -132,6 +139,13 @@ for col in norm_df.columns:
 
 # Print dtypes to check if encoding was successful
 print(norm_df.dtypes)
+
+# check for correlation matrix values now for categorical data
+graphics = Graphics(norm_df) # Update Graphics object with encoded data
+cols_to_check = cat_columns.tolist() + ['diagnosed_diabetes']
+print("cols_to_check:", cols_to_check)
+graphics.show_correlation_matrix(cols_to_check)
+# After encoding, correlation matrix values show little correlation with target variable
 
 # Update objects from class with cleaned columns
 df_subsampled_num_encoded = processor.subsample_data(fraction=0.05)
