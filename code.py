@@ -30,7 +30,10 @@ df = pd.read_csv(csv_name)
 print(df.head())
 
 # Calculate the number of missing values in each column
-print(df.isnull().sum())
+if df.isnull().sum().sum() > 0:
+    print(df.isnull().sum())
+else:
+    print("No missing values in the dataset")
 
 # Drop rows with missing values (The dataset used has no missing values so this is not needed)
 for row in df.index:
@@ -111,8 +114,8 @@ if False: # Toggle to show correlation matrix
     graphics_num_encoded.show_correlation_matrix(third_six_cols)
     graphics_num_encoded.show_correlation_matrix(fourth_six_cols)
     graphics_num_encoded.show_correlation_matrix(fifth_six_cols)
-graphics_num_encoded.show_correlation_matrix_all()
+    graphics_num_encoded.show_correlation_matrix_all()
 
-# Show scatter matrix
-#graphics_num_encoded.show_scatter_matrix(first_six_cols)
+# Scatter matrix with certain columns
+graphics_num_encoded.show_scatter_matrix(["bmi", "diagnosed_diabetes", "cholesterol_total", "hdl_cholesterol", "ldl_cholesterol", "triglycerides"])
 
