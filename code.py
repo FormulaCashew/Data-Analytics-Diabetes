@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import shutil
 import kagglehub
-from Class_implementations import Graphics, DataProcessor
+from Class_implementations import Graphics, DataProcessor, KNN
 
 
 ################################ Data Loading ################################
@@ -173,3 +173,18 @@ data_processor.plot_kmeans_clustering(["hba1c","glucose_fasting"], n_clusters=2)
 data_processor.plot_kmeans_clustering(["hba1c","glucose_postprandial"], n_clusters=2)
 # Now test for glucose fasting and glucose_postprandial
 data_processor.plot_kmeans_clustering(["glucose_fasting","glucose_postprandial"], n_clusters=2)
+
+
+####################################### Modeling #########################################
+
+train_df, test_df = processor.train_test_split(test_size=0.2)
+
+knn = KNN(k=3)
+knn.store(train_df[important_attributes], train_df['diagnosed_diabetes'])
+
+predictions = knn.predict(test_df[important_attributes])
+correct = sum(predictions == test_df['diagnosed_diabetes'])
+print(f"Accuracy: {correct/len(test_df)}")
+
+confusion_matrix = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
+print(confusion_matrix)
