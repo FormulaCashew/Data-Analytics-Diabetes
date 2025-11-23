@@ -18,7 +18,7 @@ if (not os.path.exists(csv_name)):
 
     # move dataset to local directory
     try:
-        path = shutil.move(path+"/"+csv_name, ".")
+        path = shutil.move(os.path.join(path, csv_name), ".")
         print("New path to dataset files:", path)
     except:
         print("Error moving dataset files")
@@ -101,7 +101,13 @@ if False:
 
 # Normalize numerical data
 processor = DataProcessor(df_dropped)
-norm_df = processor.normalize_data(df_dropped.select_dtypes(include=[np.number]))
+cols_to_norm = df_dropped.select_dtypes(include=[np.number]).columns.tolist()
+if "diagnosed_diabetes" in cols_to_norm:
+    cols_to_norm.remove("diagnosed_diabetes")
+norm_df = processor.normalize_data(cols_to_norm)
+
+# Check if done successfully
+print(norm_df['age'].head())
 
 ################################ Encoding #####################################
 
@@ -121,6 +127,8 @@ for col in norm_df.columns:
 
 # Print dtypes to check if encoding was successful
 print(encoded_df.dtypes)
+
+################################ EDA Visualization Part 2 ################################
 
 # Update classes
 processor = DataProcessor(encoded_df)
