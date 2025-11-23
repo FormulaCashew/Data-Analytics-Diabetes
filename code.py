@@ -42,17 +42,17 @@ for row in df.index:
 
 # Remove diabetes risk column as it may be a target variable
 df_cleaned = df.drop("diabetes_risk_score", axis=1)
-print(df_cleaned.head())
+print("Cleaned dataframe:", df_cleaned.head())
 
 # Count the number of rows and columns
-print("Dataframe shape:", df.shape)
+print("Dataframe shape:", df_cleaned.shape)
 
 # Get numerical columns
-num_columns = df.select_dtypes(include=[np.number]).columns
+num_columns = df_cleaned.select_dtypes(include=[np.number]).columns
 print("Numerical columns:", num_columns)
 
 # Get categorical columns
-cat_columns = df.select_dtypes(include= 'object').columns
+cat_columns = df_cleaned.select_dtypes(include= 'object').columns
 print("Categorical columns:", cat_columns)
 
 
@@ -74,12 +74,17 @@ fourth_six_cols = df_subsampled.columns[18:24]
 fifth_six_cols = df_subsampled.columns[24:30]
 
 # Show histograms
-if True : # Toggle to show histograms
+if False : # Toggle to show histograms
     graphics.show_histograms(first_six_cols)
     graphics.show_histograms(second_six_cols)
     graphics.show_histograms(third_six_cols)
     graphics.show_histograms(fourth_six_cols)
     graphics.show_histograms(fifth_six_cols)
+
+########################### Normalization ###########################
+
+# Normalize data
+norm_df = processor.normalize_data(df_cleaned.select_dtypes(include=[np.number]))
 
 ########################### Encoding ###########################
 
@@ -92,23 +97,27 @@ if True : # Toggle to show histograms
 # Employment status: Employed = 0, Unemployed = 1, Retired = 2, Student = 3
 # Smoking status: Never = 0, Former = 1, Current = 2
 # Diabetes stage: Type 2 = 0, No Diabetes = 1, Pre-Diabetes = 2, Gestational = 3, Type 1 = 4
-for col in df_cleaned.columns:
-    if df_cleaned[col].dtype == 'object':
-        df_cleaned[col] = df_cleaned[col].astype('category').cat.codes
+for col in norm_df.columns:
+    if norm_df[col].dtype == 'object':
+        norm_df[col] = norm_df[col].astype('category').cat.codes
 
 # Print dtypes to check if encoding was successful
-print(df_cleaned.dtypes)
+print(norm_df.dtypes)
 
 # Divide again columns as they need to be updated after encoding
-first_six_cols = df_cleaned.columns[:6]
-second_six_cols = df_cleaned.columns[6:12]
-third_six_cols = df_cleaned.columns[12:18]
-fourth_six_cols = df_cleaned.columns[18:24]
-fifth_six_cols = df_cleaned.columns[24:30]
+first_six_cols = norm_df.columns[:6]
+second_six_cols = norm_df.columns[6:12]
+third_six_cols = norm_df.columns[12:18]
+fourth_six_cols = norm_df.columns[18:24]
+fifth_six_cols = norm_df.columns[24:30]
 
-# Create new Graphics object from cleaned columns
-df_subsampled_num_encoded = processor.subsample_data(fraction=0.1)
+# Update objects from class with cleaned columns
+df_subsampled_num_encoded = processor.subsample_data(fraction=0.05)
 graphics_num_encoded = Graphics(df_subsampled_num_encoded)
+data_processor = DataProcessor(df_subsampled_num_encoded)
+
+#Test nromalization
+graphics_num_encoded.show_histograms(["age"])
 
 # Show correlation matrix
 if False: # Toggle to show correlation matrix
@@ -120,5 +129,7 @@ if False: # Toggle to show correlation matrix
     graphics_num_encoded.show_correlation_matrix_all()
 
 # Scatter matrix with certain columns
-graphics_num_encoded.show_scatter_matrix(["bmi", "diagnosed_diabetes", "cholesterol_total", "hdl_cholesterol", "ldl_cholesterol", "triglycerides"])
+# graphics_num_encoded.show_scatter_matrix(["cholesterol_total", "hdl_cholesterol", "ldl_cholesterol", "triglycerides", "diagnosed_diabetes"])
 
+# Show kmeans clustering
+# data_processor.plot_kmeans_clustering(["cholesterol_total","diagnosed_diabetes"])
