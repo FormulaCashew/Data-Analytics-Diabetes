@@ -24,7 +24,11 @@ class Graphics:
         sns.set(style="whitegrid")
         if columns is None:
             columns = self.df.columns
-        
+
+        if len(columns) == 0:
+            print("No columns provided")
+            return
+
         # Check for existing columns in the dataset
         columns = [col for col in columns if col in self.df.columns]
 
@@ -50,9 +54,9 @@ class Graphics:
 
         plt.tight_layout()
         plt.show()
-    def show_correlation_matrix(self, columns, cols_per_row=3):
+    def show_correlation_matrix(self, columns):
         '''
-        Function to show correlation matrix for the given columns
+        Function to show correlation matrix for the given columns, if columns > 10, heatmap function will be called
         Values given must be numerical
         
         Parameters:
@@ -63,6 +67,13 @@ class Graphics:
         '''
         if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
+        if len(columns) > 10:
+            # Show only colors
+            print("Too many columns, showing only colors")
+            self.heatmap(columns)
+        elif len(columns) == 0:
+            print("No columns provided")
+            return
         corr_matrix = self.df[columns].corr()
         sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
         plt.show()
@@ -76,7 +87,7 @@ class Graphics:
         else:
             # Show correlation matrix for all columns
             self.show_correlation_matrix(self.df.columns)
-    def show_scatter_matrix(self, columns, cols_per_row=3):
+    def show_scatter_matrix(self, columns):
         '''
         Function to show scatter matrix for the given columns
         Values given must be numerical
@@ -87,24 +98,43 @@ class Graphics:
         Returns:
         None
         '''
-        if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in self.df.columns):
+        if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
-        sns.pairplot(self.df[columns])
-        plt.show()
+        if len(columns) > 5:
+            # Show only colors
+            print("Too many columns to show scatter matrix")
+            return
+        else:
+            sns.pairplot(self.df[columns])
+            print("Showing scatter matrix for columns:", columns)
+            plt.show()
     def show_boxplots(self, columns, cols_per_row=3):
         '''
         Function to show boxplots for the given columns
         Values given must be numerical
         
         Parameters:
-        columns: list of columns to show boxplots for
+        columns: list of columns to show boxplots
+        cols_per_row: number of columns per row
         
         Returns:
         None
         '''
         if not all(col in self.df.select_dtypes(include=['float64', 'int64', 'int8']).columns for col in columns):
             raise ValueError("All columns must be numerical")
-        self.df[columns].boxplot(figsize=(20,15))
+        
+        columns = [col for col in columns if col in self.df.columns]
+        num_cols = len(columns)
+        num_rows = int(np.ceil(num_cols / cols_per_row))
+        fig, axes = plt.subplots(num_rows, cols_per_row, figsize=(cols_per_row*4, num_rows*4))
+        axes = axes.flatten()
+        for i, col in enumerate(columns):
+            ax = axes[i]
+            sns.boxplot(x=col, data=self.df, ax=ax)
+            ax.set_title(col)
+            ax.set_xlabel(col)
+            ax.set_ylabel("Frequency")
+        plt.tight_layout()
         plt.show()
     def compare_hist(self, column1, column2):
         plt.figure(figsize=(20,15))
