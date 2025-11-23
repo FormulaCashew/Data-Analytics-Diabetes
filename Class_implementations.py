@@ -56,7 +56,7 @@ class Graphics:
         plt.show()
     def show_correlation_matrix(self, columns):
         '''
-        Function to show correlation matrix for the given columns, if columns > 10, heatmap function will be called
+        Function to show correlation matrix for the given columns
         Values given must be numerical
         
         Parameters:
