@@ -6,6 +6,8 @@ import os
 import shutil
 import kagglehub
 from sklearn.metrics import confusion_matrix
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from Class_implementations import Graphics, DataProcessor, KNN
 
 
@@ -180,14 +182,58 @@ data_processor.plot_kmeans_clustering(["glucose_fasting","glucose_postprandial"]
 
 # IMPORTANT: Use 5% to 10% of the dataset for training and testing, knn is heavy and takes a lot of time to run
 subsampled_df = processor.subsample_data(fraction=0.05)
-knn_processor = DataProcessor(subsampled_df)
-train_df, test_df = knn_processor.train_test_split(test_size=0.2)
+processor = DataProcessor(subsampled_df)
+train_df, test_df = processor.train_test_split(test_size=0.2)
 
-knn = KNN(k=3)
-knn.store(train_df[important_attributes], train_df['diagnosed_diabetes'])
+################# Decision Tree Library #################
 
-predictions = knn.predict(test_df[important_attributes])
-correct = sum(predictions == test_df['diagnosed_diabetes'])
-print(f"Accuracy: {correct/len(test_df)}")
+if False:
+    # Create Decision Tree object
+    decision_tree = DecisionTreeClassifier()
+    decision_tree.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
 
-knn.plot_confusion_matrix(test_df[important_attributes], test_df['diagnosed_diabetes'])
+    # Make predictions
+    predictions = decision_tree.predict(test_df[important_attributes])
+    # Calculate accuracy
+    correct = sum(predictions == test_df['diagnosed_diabetes'])
+    print(f"Accuracy: {correct/len(test_df)}")
+    # Plot confusion matrix
+    cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
+    sns.heatmap(cm, annot=True)
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.show()
+
+################# KNN Library #################
+
+if True:
+    knn = KNeighborsClassifier(n_neighbors=3)
+    knn.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
+    # Make predictions
+    predictions = knn.predict(test_df[important_attributes])
+    # Calculate accuracy
+    correct = sum(predictions == test_df['diagnosed_diabetes'])
+    print(f"Accuracy: {correct/len(test_df)}")
+    # Plot confusion matrix
+    cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
+    sns.heatmap(cm, annot=True)
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.show()
+    print(cm)
+
+################# KNN Personal #################
+if False:
+    # This code has been disabled as it takes a lot of time to run
+    # During testing, it was found to give the same results as the library implementation
+    # It is left here for reference, but the library implementation is preferred due to its speed
+    # Create KNN object
+    knn = KNN(k=3)
+    knn.store(train_df[important_attributes], train_df['diagnosed_diabetes'])
+    # Make predictions
+    predictions = knn.predict(test_df[important_attributes])
+    # Calculate accuracy
+    correct = sum(predictions == test_df['diagnosed_diabetes'])
+    print(f"Accuracy: {correct/len(test_df)}")
+    # Plot confusion matrix
+    knn.plot_confusion_matrix(test_df[important_attributes], test_df['diagnosed_diabetes'])
