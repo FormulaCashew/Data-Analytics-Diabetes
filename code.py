@@ -187,7 +187,7 @@ train_df, test_df = processor.train_test_split(test_size=0.2)
 
 ################# Decision Tree Library #################
 
-if False:
+if True:
     # Create Decision Tree object
     decision_tree = DecisionTreeClassifier()
     decision_tree.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
@@ -200,13 +200,23 @@ if False:
     # Plot confusion matrix
     cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
     sns.heatmap(cm, annot=True)
+    plt.title("Confusion Matrix Decision Tree")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
     plt.show()
 
+    # Plot feature importance
+    feature_importance = decision_tree.feature_importances_
+    feature_names = train_df[important_attributes].columns
+    feature_importance = pd.Series(feature_importance, index=feature_names)
+    feature_importance.sort_values(ascending=False, inplace=True)
+    feature_importance.plot(kind='bar')
+    plt.title("Feature Importance Decision Tree")
+    plt.show()
+
 ################# KNN Library #################
 
-if True:
+if False:
     knn = KNeighborsClassifier(n_neighbors=3)
     knn.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
     # Make predictions
@@ -217,6 +227,7 @@ if True:
     # Plot confusion matrix
     cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
     sns.heatmap(cm, annot=True)
+    plt.title("Confusion Matrix KNN Library")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
     plt.show()
