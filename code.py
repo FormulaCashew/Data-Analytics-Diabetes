@@ -8,6 +8,8 @@ import kagglehub
 from sklearn.metrics import confusion_matrix
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
 from Class_implementations import Graphics, DataProcessor, KNN
 
 
@@ -256,3 +258,22 @@ if False:
     print(f"Accuracy: {correct/len(test_df)}")
     # Plot confusion matrix
     knn.plot_confusion_matrix(test_df[important_attributes], test_df['diagnosed_diabetes'])
+
+
+################# Random Forest #################
+if True:
+    random_forest = RandomForestClassifier(n_estimators=100)
+    random_forest.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
+    # Make predictions
+    predictions = random_forest.predict(test_df[important_attributes])
+    # Calculate accuracy
+    correct = sum(predictions == test_df['diagnosed_diabetes'])
+    print(f"Accuracy for Random Forest: {correct/len(test_df)}")
+    # Plot confusion matrix
+    cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
+    sns.heatmap(cm, annot=True)
+    plt.title("Confusion Matrix Random Forest")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.show()
+    print(cm)
