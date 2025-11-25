@@ -277,3 +277,14 @@ if True:
     plt.ylabel("Actual")
     plt.show()
     print(cm)
+
+    # Plot feature importance
+    feature_importance = random_forest.feature_importances_
+    feature_names = train_df[important_attributes].columns
+    feature_importance = pd.Series(feature_importance, index=feature_names)
+    feature_importance.sort_values(ascending=False, inplace=True)
+    feature_importance.plot(kind='bar')
+    plt.title("Feature Importance Random Forest")
+    plt.show()
+    # Shows a bar chart a bit different than the one from decision tree
+    # Glucose postprandial has a higher importance but hba1c is still the most important
