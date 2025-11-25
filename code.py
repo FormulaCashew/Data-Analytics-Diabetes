@@ -10,6 +10,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
+from xgboost import XGBClassifier
 from Class_implementations import Graphics, DataProcessor, KNN
 
 
@@ -307,13 +308,33 @@ if True:
     plt.ylabel("Actual")
     plt.show()
     print(cm)
+    
+###################### XG Boost ####################
 
+if True:
+    xgboost = XGBClassifier()
+    xgboost.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
+    # Make predictions
+    predictions = xgboost.predict(test_df[important_attributes])
+    # Calculate accuracy
+    correct = sum(predictions == test_df['diagnosed_diabetes'])
+    print(f"Accuracy for XG Boost: {correct/len(test_df)}")
+    xgboost_accuracy = correct/len(test_df)
+    # Plot confusion matrix
+    cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
+    sns.heatmap(cm, annot=True)
+    plt.title("Confusion Matrix XG Boost")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.show()
+    print(cm)
 
 ################# Model Comparison #################
 print(f"Decision Tree Accuracy: {decision_tree_accuracy}")
 print(f"KNN Accuracy: {knn_accuracy}")
 print(f"Random Forest Accuracy: {random_forest_accuracy}")
 print(f"Gaussian NB Accuracy: {gaussian_nb_accuracy}")
+print(f"XG Boost Accuracy: {xgboost_accuracy}")
 best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy, gaussian_nb_accuracy)
 
 
@@ -325,6 +346,8 @@ elif best_model == random_forest_accuracy:
     best_model_name = "Random Forest"
 elif best_model == gaussian_nb_accuracy:
     best_model_name = "Gaussian NB"
+elif best_model == xgboost_accuracy:
+    best_model_name = "XG Boost"
 print(f"\nBest Model: {best_model_name}")
 print(f"{best_model_name} Accuracy: {best_model}")
 with open("model_best.txt", "w") as f:
