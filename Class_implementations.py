@@ -328,6 +328,38 @@ class DataProcessor:
         
         return train_df, test_df 
 
+    def remove_outliers(self, columns, threshold=1.5):
+        """
+        Removes outliers from the dataset using the InterQuartileRange (IQR) method
+        Args:
+            columns (list): List of column names to check for outliers
+            threshold (float): IQR threshold, defaults to 1.5
+        Returns:
+            Dataframe with outliers removed in the same object
+        """
+        original_rows = len(self.df)
+        df_clean = self.df.copy()
+        
+        for col in columns:
+            if col not in df_clean.columns: continue
+            if not np.issubdtype(df_clean[col].dtype, np.number): continue
+            
+            # Calculate Q1, Q3 and IQR
+            Q1 = df_clean[col].quantile(0.25)
+            Q3 = df_clean[col].quantile(0.75)
+            IQR = Q3 - Q1
+            
+            lower_bound = Q1 - threshold * IQR
+            upper_bound = Q3 + threshold * IQR
+            
+            # Filter out the outliers
+            df_clean = df_clean[(df_clean[col] >= lower_bound) & (df_clean[col] <= upper_bound)]
+            
+        removed = original_rows - len(df_clean)
+        print(f"Outliers removed: {removed} rows.")
+        self.df = df_clean
+        return self.df
+    
 class KNN:
     """
     Class KNN_Model with methods to implement KNN_Model
