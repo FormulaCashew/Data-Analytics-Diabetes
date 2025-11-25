@@ -207,6 +207,7 @@ if True:
     # Calculate accuracy
     correct = sum(predictions == test_df['diagnosed_diabetes'])
     print(f"Accuracy for Decision Tree: {correct/len(test_df)}")
+    decision_tree_accuracy = correct/len(test_df)
     # Plot confusion matrix
     cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
     sns.heatmap(cm, annot=True)
@@ -234,6 +235,7 @@ if True:
     # Calculate accuracy
     correct = sum(predictions == test_df['diagnosed_diabetes'])
     print(f"Accuracy for KNN: {correct/len(test_df)}")
+    knn_accuracy = correct/len(test_df)
     # Plot confusion matrix
     cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
     sns.heatmap(cm, annot=True)
@@ -269,6 +271,7 @@ if True:
     # Calculate accuracy
     correct = sum(predictions == test_df['diagnosed_diabetes'])
     print(f"Accuracy for Random Forest: {correct/len(test_df)}")
+    random_forest_accuracy = correct/len(test_df)
     # Plot confusion matrix
     cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
     sns.heatmap(cm, annot=True)
@@ -288,3 +291,11 @@ if True:
     plt.show()
     # Shows a bar chart a bit different than the one from decision tree
     # Glucose postprandial has a higher importance but hba1c is still the most important
+
+################# Model Comparison #################
+print(f"Decision Tree Accuracy: {decision_tree_accuracy}")
+print(f"KNN Accuracy: {knn_accuracy}")
+print(f"Random Forest Accuracy: {random_forest_accuracy}")
+best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy)
+
+print(f"Best Model Accuracy: {best_model}")
