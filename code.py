@@ -72,9 +72,11 @@ for col in df_dropped.columns:
 # Create DataProcessor object from cleaned columns
 processor = DataProcessor(df_dropped)
 
-# Remove outliers from numerical columns
-processor.remove_outliers(num_columns, threshold=2.0)
+# Remove outliers from numerical columns which are not binary
+cols_outlier_check = ["age", "alcohol_consumption_per_week", "physical_activity_minutes_per_week", "diet_score", "sleep_hours_per_day", "screen_time_hours_per_day", "hypertension_history", "cardiovascular_history", "bmi", "waist_to_hip_ratio", "systolic_bp", "diastolic_bp", "heart_rate", "cholesterol_total", "hdl_cholesterol", "ldl_cholesterol", "triglycerides", "glucose_fasting", "glucose_postprandial", "insulin_level", "hba1c"]
+processor.remove_outliers(cols_outlier_check, threshold=2.0)
 df_dropped = processor.get_data() # Update dataframe using a copy
+print("Dataframe shape after removing outliers:", df_dropped.shape)
 
 # Subsample data
 df_subsampled = processor.subsample_data(fraction=0.1)
@@ -202,7 +204,7 @@ if True:
     predictions = decision_tree.predict(test_df[important_attributes])
     # Calculate accuracy
     correct = sum(predictions == test_df['diagnosed_diabetes'])
-    print(f"Accuracy: {correct/len(test_df)}")
+    print(f"Accuracy for Decision Tree: {correct/len(test_df)}")
     # Plot confusion matrix
     cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
     sns.heatmap(cm, annot=True)
@@ -229,7 +231,7 @@ if True:
     predictions = knn.predict(test_df[important_attributes])
     # Calculate accuracy
     correct = sum(predictions == test_df['diagnosed_diabetes'])
-    print(f"Accuracy: {correct/len(test_df)}")
+    print(f"Accuracy for KNN: {correct/len(test_df)}")
     # Plot confusion matrix
     cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
     sns.heatmap(cm, annot=True)
