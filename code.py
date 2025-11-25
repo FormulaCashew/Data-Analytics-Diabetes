@@ -90,7 +90,7 @@ if False:
     graphics_total.show_correlation_matrix(num_columns)
 
 # Based on correlation matrix above, select important numerical attributes with correlation > 0.1, ordered by correlation
-important_attributes = ["hba1c", "glucose_postprandial", "glucose_fasting", "family_history_diabetes", "age", "bmi", "systolic_bp"]
+important_attributes = ["hba1c", "glucose_postprandial", "glucose_fasting", "family_history_diabetes", "age", "bmi", "systolic_bp", "smoking_status"]
 important_attributes_w_target = important_attributes + ["diagnosed_diabetes"]
 
 important_columns = df_subsampled[important_attributes].columns
@@ -216,15 +216,6 @@ if True:
     plt.ylabel("Actual")
     plt.show()
 
-    # Plot feature importance
-    feature_importance = decision_tree.feature_importances_
-    feature_names = train_df[important_attributes].columns
-    feature_importance = pd.Series(feature_importance, index=feature_names)
-    feature_importance.sort_values(ascending=False, inplace=True)
-    feature_importance.plot(kind='bar')
-    plt.title("Feature Importance Decision Tree")
-    plt.show()
-
 ################# KNN Library #################
 
 if True:
@@ -292,11 +283,42 @@ if True:
     # Shows a bar chart a bit different than the one from decision tree
     # Glucose postprandial has a higher importance but hba1c is still the most important
 
+################# Gaussian NB ######################
+
+if True:
+    gaussian_nb = GaussianNB()
+    gaussian_nb.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
+    # Make predictions
+    predictions = gaussian_nb.predict(test_df[important_attributes])
+    # Calculate accuracy
+    correct = sum(predictions == test_df['diagnosed_diabetes'])
+    print(f"Accuracy for Gaussian NB: {correct/len(test_df)}")
+    gaussian_nb_accuracy = correct/len(test_df)
+    # Plot confusion matrix
+    cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
+    sns.heatmap(cm, annot=True)
+    plt.title("Confusion Matrix Gaussian NB")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.show()
+    print(cm)
+
+    # Plot feature importance
+    feature_importance = gaussian_nb.feature_importances_
+    feature_names = train_df[important_attributes].columns
+    feature_importance = pd.Series(feature_importance, index=feature_names)
+    feature_importance.sort_values(ascending=False, inplace=True)
+    feature_importance.plot(kind='bar')
+    plt.title("Feature Importance Gaussian NB")
+    plt.show()
+
+
 ################# Model Comparison #################
 print(f"Decision Tree Accuracy: {decision_tree_accuracy}")
 print(f"KNN Accuracy: {knn_accuracy}")
 print(f"Random Forest Accuracy: {random_forest_accuracy}")
-best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy)
+print(f"Gaussian NB Accuracy: {gaussian_nb_accuracy}")
+best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy, gaussian_nb_accuracy)
 
 print(f"Best Model Accuracy: {best_model}")
 
@@ -304,8 +326,10 @@ if best_model == decision_tree_accuracy:
     best_model_name = "Decision Tree"
 elif best_model == knn_accuracy:
     best_model_name = "KNN"
-else:
+elif best_model == random_forest_accuracy:
     best_model_name = "Random Forest"
+elif best_model == gaussian_nb_accuracy:
+    best_model_name = "Gaussian NB"
 
 with open("model_best.txt", "w") as f:
     f.write(best_model_name)
