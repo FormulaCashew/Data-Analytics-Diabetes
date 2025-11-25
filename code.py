@@ -299,3 +299,13 @@ print(f"Random Forest Accuracy: {random_forest_accuracy}")
 best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy)
 
 print(f"Best Model Accuracy: {best_model}")
+
+if best_model == decision_tree_accuracy:
+    best_model_name = "Decision Tree"
+elif best_model == knn_accuracy:
+    best_model_name = "KNN"
+else:
+    best_model_name = "Random Forest"
+
+with open("model_best.txt", "w") as f:
+    f.write(best_model_name)
