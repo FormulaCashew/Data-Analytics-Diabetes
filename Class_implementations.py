@@ -323,10 +323,10 @@ class DataProcessor:
         test_indexes = indexes[split_index:]
         
         # Assign rows to training and testing dataframes
-        train_df = self.df.iloc[train_indexes].reset_index(drop=True).copy()
-        test_df = self.df.iloc[test_indexes].reset_index(drop=True).copy()
+        self.train_df = self.df.iloc[train_indexes].reset_index(drop=True).copy()
+        self.test_df = self.df.iloc[test_indexes].reset_index(drop=True).copy()
         
-        return train_df, test_df 
+        return self.train_df, self.test_df 
 
     def remove_outliers(self, columns, threshold=1.5):
         """
