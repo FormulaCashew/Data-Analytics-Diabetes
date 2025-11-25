@@ -90,7 +90,7 @@ if False:
     graphics_total.show_correlation_matrix(num_columns)
 
 # Based on correlation matrix above, select important numerical attributes with correlation > 0.1, ordered by correlation
-important_attributes = ["hba1c", "glucose_postprandial", "glucose_fasting", "family_history_diabetes", "age", "bmi", "systolic_bp", "smoking_status"]
+important_attributes = ["hba1c", "glucose_postprandial", "glucose_fasting", "family_history_diabetes", "age", "bmi", "systolic_bp"]
 important_attributes_w_target = important_attributes + ["diagnosed_diabetes"]
 
 important_columns = df_subsampled[important_attributes].columns
@@ -174,6 +174,9 @@ graphics.show_hist_axis("employment_status", "diagnosed_diabetes")
 graphics.show_hist_axis("smoking_status", "diagnosed_diabetes")
 # Shows that current smoking has higher count of diagnosed diabetes
 
+important_attributes = ["hba1c", "glucose_postprandial", "glucose_fasting", "family_history_diabetes", "age", "bmi", "systolic_bp", "smoking_status", "employment_status", "education_level", "income_level"]
+important_attributes_w_target = important_attributes + ["diagnosed_diabetes"]
+
 ################# KMeans Clustering #################
 # Update objects from class with cleaned columns
 df_subsampled_num_encoded = processor.subsample_data(fraction=0.1)
@@ -192,8 +195,10 @@ data_processor.plot_kmeans_clustering(["glucose_fasting","glucose_postprandial"]
 
 # IMPORTANT: Use 5% to 10% of the dataset for training and testing, knn is heavy and takes a lot of time to run
 subsampled_df = processor.subsample_data(fraction=0.05)
-processor = DataProcessor(subsampled_df)
-train_df, test_df = processor.train_test_split(test_size=0.2)
+subsampled_processor = DataProcessor(subsampled_df)
+train_df, test_df = subsampled_processor.train_test_split(test_size=0.2)
+print(train_df.shape)
+print(test_df.shape)
 
 ################# Decision Tree Library #################
 
@@ -303,15 +308,6 @@ if True:
     plt.show()
     print(cm)
 
-    # Plot feature importance
-    feature_importance = gaussian_nb.feature_importances_
-    feature_names = train_df[important_attributes].columns
-    feature_importance = pd.Series(feature_importance, index=feature_names)
-    feature_importance.sort_values(ascending=False, inplace=True)
-    feature_importance.plot(kind='bar')
-    plt.title("Feature Importance Gaussian NB")
-    plt.show()
-
 
 ################# Model Comparison #################
 print(f"Decision Tree Accuracy: {decision_tree_accuracy}")
@@ -320,7 +316,6 @@ print(f"Random Forest Accuracy: {random_forest_accuracy}")
 print(f"Gaussian NB Accuracy: {gaussian_nb_accuracy}")
 best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy, gaussian_nb_accuracy)
 
-print(f"Best Model Accuracy: {best_model}")
 
 if best_model == decision_tree_accuracy:
     best_model_name = "Decision Tree"
@@ -330,6 +325,7 @@ elif best_model == random_forest_accuracy:
     best_model_name = "Random Forest"
 elif best_model == gaussian_nb_accuracy:
     best_model_name = "Gaussian NB"
-
+print(f"\nBest Model: {best_model_name}")
+print(f"{best_model_name} Accuracy: {best_model}")
 with open("model_best.txt", "w") as f:
     f.write(best_model_name)
