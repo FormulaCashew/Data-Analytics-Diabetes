@@ -69,8 +69,14 @@ for col in df_dropped.columns:
 
 ################################ EDA Visualization #################################
 
-# Create Graphics object from cleaned columns
+# Create DataProcessor object from cleaned columns
 processor = DataProcessor(df_dropped)
+
+# Remove outliers from numerical columns
+processor.remove_outliers(num_columns, threshold=2.0)
+df_dropped = processor.get_data() # Update dataframe using a copy
+
+# Subsample data
 df_subsampled = processor.subsample_data(fraction=0.1)
 graphics = Graphics(df_subsampled)
 
@@ -92,11 +98,11 @@ graphics.show_histograms(important_columns)
 graphics.show_correlation_matrix(important_columns_w_target)
 
 # Show scatter matrix
-if False:
+if True:
     graphics.show_scatter_matrix(important_columns_w_target)
 
 # Show boxplots to check for outliers
-if False:
+if True:
     graphics.show_boxplots(important_columns)
     
 
@@ -216,7 +222,7 @@ if True:
 
 ################# KNN Library #################
 
-if False:
+if True:
     knn = KNeighborsClassifier(n_neighbors=3)
     knn.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
     # Make predictions
