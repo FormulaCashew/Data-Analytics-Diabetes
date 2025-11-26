@@ -9,7 +9,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 from Class_implementations import Graphics, DataProcessor, KNN
 
@@ -288,26 +287,6 @@ if True:
     plt.show()
     # Shows a bar chart a bit different than the one from decision tree
     # Glucose postprandial has a higher importance but hba1c is still the most important
-
-################# Gaussian NB ######################
-
-if True:
-    gaussian_nb = GaussianNB()
-    gaussian_nb.fit(train_df[important_attributes], train_df['diagnosed_diabetes'])
-    # Make predictions
-    predictions = gaussian_nb.predict(test_df[important_attributes])
-    # Calculate accuracy
-    correct = sum(predictions == test_df['diagnosed_diabetes'])
-    print(f"Accuracy for Gaussian NB: {correct/len(test_df)}")
-    gaussian_nb_accuracy = correct/len(test_df)
-    # Plot confusion matrix
-    cm = confusion_matrix(test_df['diagnosed_diabetes'], predictions)
-    sns.heatmap(cm, annot=True)
-    plt.title("Confusion Matrix Gaussian NB")
-    plt.xlabel("Predicted")
-    plt.ylabel("Actual")
-    plt.show()
-    print(cm)
     
 ###################### XG Boost ####################
 
@@ -333,9 +312,8 @@ if True:
 print(f"Decision Tree Accuracy: {decision_tree_accuracy}")
 print(f"KNN Accuracy: {knn_accuracy}")
 print(f"Random Forest Accuracy: {random_forest_accuracy}")
-print(f"Gaussian NB Accuracy: {gaussian_nb_accuracy}")
 print(f"XG Boost Accuracy: {xgboost_accuracy}")
-best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy, gaussian_nb_accuracy)
+best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy, xgboost_accuracy)
 
 
 if best_model == decision_tree_accuracy:
@@ -344,8 +322,6 @@ elif best_model == knn_accuracy:
     best_model_name = "KNN"
 elif best_model == random_forest_accuracy:
     best_model_name = "Random Forest"
-elif best_model == gaussian_nb_accuracy:
-    best_model_name = "Gaussian NB"
 elif best_model == xgboost_accuracy:
     best_model_name = "XG Boost"
 print(f"\nBest Model: {best_model_name}")

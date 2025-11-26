@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import os
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -23,7 +22,7 @@ class DiabetesModelService:
         Loads and trains the model.
         Args:
             csv_path: Path to the CSV file containing the dataset.
-            model_type: Type of model to use. Can be "Auto", "Random Forest", "Decision Tree", "KNN", "Gaussian NB", "XG Boost".
+            model_type: Type of model to use. Can be "Auto", "Random Forest", "Decision Tree", "KNN", "XG Boost".
         """
         if not os.path.exists(csv_path):
             raise FileNotFoundError(f"Dataset not found at {csv_path}")
@@ -110,8 +109,6 @@ class DiabetesModelService:
             self.model = DecisionTreeClassifier()
         elif model_name == "KNN":
             self.model = KNeighborsClassifier(n_neighbors=3)
-        elif model_name == "Gaussian NB":
-            self.model = GaussianNB()
         elif model_name == "XG Boost":
             self.model = XGBClassifier()
         else:
