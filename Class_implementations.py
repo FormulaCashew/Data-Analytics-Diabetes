@@ -56,7 +56,7 @@ class Graphics:
 
         plt.tight_layout()
         plt.show()
-    def show_correlation_matrix(self, columns):
+    def show_correlation_matrix(self, columns, x_size=10, y_size=10):
         '''
         Function to show correlation matrix for the given columns
         Values given must be numerical
@@ -74,6 +74,7 @@ class Graphics:
         elif len(columns) == 0:
             print("No columns provided")
             return
+        plt.figure(figsize=(x_size, y_size))
         corr_matrix = self.df[columns].corr()
         sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
         plt.show()
