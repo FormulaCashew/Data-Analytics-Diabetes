@@ -17,12 +17,11 @@ class DiabetesModelService:
         self.important_attributes = ["hba1c", "glucose_postprandial", "glucose_fasting", "family_history_diabetes", "age", "bmi", "systolic_bp", "smoking_status", "employment_status", "education_level", "income_level"]
         self.target_col = "diagnosed_diabetes"
         
-    def load_and_train(self, csv_path="diabetes_dataset.csv", model_type="Auto"):
+    def load_and_train(self, csv_path="diabetes_dataset.csv"):
         """
-        Loads and trains the model.
+        Loads, processes, and trains multiple models to select the best one dynamically.
         Args:
             csv_path: Path to the CSV file containing the dataset.
-            model_type: Type of model to use. Can be "Auto", "Random Forest", "Decision Tree", "KNN", "XG Boost".
         """
         if not os.path.exists(csv_path):
             raise FileNotFoundError(f"Dataset not found at {csv_path}")
@@ -36,22 +35,15 @@ class DiabetesModelService:
             df = df.drop("diabetes_risk_score", axis=1)
             
         # Remove outliers using DataProcessor
-        # We need to identify numerical columns for outlier removal
-        # In code.py, specific columns are checked
         cols_outlier_check = ["age", "alcohol_consumption_per_week", "physical_activity_minutes_per_week", "diet_score", "sleep_hours_per_day", "screen_time_hours_per_day", "hypertension_history", "cardiovascular_history", "bmi", "waist_to_hip_ratio", "systolic_bp", "diastolic_bp", "heart_rate", "cholesterol_total", "hdl_cholesterol", "ldl_cholesterol", "triglycerides", "glucose_fasting", "glucose_postprandial", "insulin_level", "hba1c"]
         
         processor = DataProcessor(df)
         processor.remove_outliers(cols_outlier_check, threshold=2.0)
         df = processor.get_data()
         
-        # Subsample data like in code.py (using 5% for speed, or more if needed)
-        # code.py uses 0.05 for training
+        # Subsample data (using 5% for speed as requested)
         processor = DataProcessor(df)
-        df_subsampled = processor.subsample_data(fraction=0.1) # Using 10% for better service quality
-        
-        # Store min/max for normalization (using the subsampled data or full data? 
-        # Ideally full data min/max is better, but let's use subsampled to be consistent with training data)
-        # Actually, we should calculate min/max on the data we use for training.
+        df_subsampled = processor.subsample_data(fraction=0.05)
         
         # Identify numerical columns for normalization
         num_cols = df_subsampled.select_dtypes(include=[np.number]).columns.tolist()
@@ -62,9 +54,6 @@ class DiabetesModelService:
         self.max_vals = df_subsampled[num_cols].max()
         
         # Normalize
-        # We do manual normalization here to ensure we use the same logic as we will in predict
-        # Or use DataProcessor and trust it matches. 
-        # DataProcessor does: (val - min) / (max - min)
         for col in num_cols:
             if self.max_vals[col] - self.min_vals[col] != 0:
                 df_subsampled[col] = (df_subsampled[col] - self.min_vals[col]) / (self.max_vals[col] - self.min_vals[col])
@@ -72,49 +61,55 @@ class DiabetesModelService:
                 df_subsampled[col] = 0
                 
         # Encoding
-        # Drop gender = Other
         if 'gender' in df_subsampled.columns:
             df_subsampled = df_subsampled[df_subsampled['gender'] != 'Other']
             
         # Create mappings for categorical columns
         cat_cols = df_subsampled.select_dtypes(include=['object']).columns
         for col in cat_cols:
-            # Create mapping: sorted unique values -> index
             unique_vals = sorted(df_subsampled[col].unique())
             mapping = {val: i for i, val in enumerate(unique_vals)}
             self.cat_mappings[col] = mapping
-            # Apply mapping
             df_subsampled[col] = df_subsampled[col].map(mapping)
             
         # Prepare X and y
-        # Ensure all important attributes are present
         missing_attrs = [attr for attr in self.important_attributes if attr not in df_subsampled.columns]
         if missing_attrs:
             raise ValueError(f"Missing attributes in dataset: {missing_attrs}")
             
-        X = df_subsampled[self.important_attributes]
-        y = df_subsampled[self.target_col]
+        # Split data for model evaluation
+        processor = DataProcessor(df_subsampled)
+        train_df, test_df = processor.train_test_split(test_size=0.2)
         
-        # Model Selection
-        if model_type == "Auto":
-            # Default to Random Forest as it performed best in analysis
-            model_name = "Random Forest"
-        else:
-            model_name = model_type
+        X_train = train_df[self.important_attributes]
+        y_train = train_df[self.target_col]
+        X_test = test_df[self.important_attributes]
+        y_test = test_df[self.target_col]
+        
+        # Define models to evaluate
+        models = {
+            "Random Forest": RandomForestClassifier(n_estimators=100),
+            "Decision Tree": DecisionTreeClassifier(),
+            "KNN": KNeighborsClassifier(n_neighbors=3),
+            "XG Boost": XGBClassifier()
+        }
+        
+        best_accuracy = 0
+        best_model_name = ""
+        
+        print("\nEvaluating models...")
+        for name, model in models.items():
+            model.fit(X_train, y_train)
+            predictions = model.predict(X_test)
+            accuracy = sum(predictions == y_test) / len(y_test)
+            print(f"{name} Accuracy: {accuracy:.4f}")
             
-        print(f"Training {model_name}...")
-        if model_name == "Random Forest":
-            self.model = RandomForestClassifier(n_estimators=100)
-        elif model_name == "Decision Tree":
-            self.model = DecisionTreeClassifier()
-        elif model_name == "KNN":
-            self.model = KNeighborsClassifier(n_neighbors=3)
-        elif model_name == "XG Boost":
-            self.model = XGBClassifier()
-        else:
-            raise ValueError(f"Unknown model type: {model_name}")
-            
-        self.model.fit(X, y)
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_model_name = name
+                self.model = model
+                
+        print(f"\nBest Model Selected: {best_model_name} with Accuracy: {best_accuracy:.4f}")
         print("Model trained successfully.")
 
     def predict_patient(self, patient_data: dict):
@@ -165,7 +160,6 @@ if __name__ == "__main__":
     service.load_and_train()
     
     # Test prediction using test patient
-    # We need to provide raw values, as the service handles normalization/encoding
     test_patient = {
         "hba1c": 5.0,
         "glucose_postprandial": 100,
@@ -184,4 +178,4 @@ if __name__ == "__main__":
         pred = service.predict_patient(test_patient)
         print(f"Prediction for test patient: {pred}")
     except Exception as e:
-        print(f"Prediction failed (expected if test data schema doesn't match): {e}")
+        print(f"Prediction failed: {e}")
