@@ -2,3 +2,4 @@
 __pycache__/
 diabetes_dataset.csv
 model_best.txt
+*.png
