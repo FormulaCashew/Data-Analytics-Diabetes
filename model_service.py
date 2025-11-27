@@ -161,7 +161,7 @@ if __name__ == "__main__":
     
     # Test prediction using test patient
     test_patient = {
-        "hba1c": 5.0,
+        "hba1c": 5.0, # A low value, indicating good blood sugar control
         "glucose_postprandial": 100,
         "glucose_fasting": 90,
         "family_history_diabetes": 0, 
