@@ -159,7 +159,7 @@ if __name__ == "__main__":
     service = DiabetesModelService()
     service.load_and_train()
     
-    # Test prediction using test patient
+    # Test prediction using test patient, json format
     test_patient = {
         "hba1c": 5.0, # A low value, indicating good blood sugar control
         "glucose_postprandial": 100,
