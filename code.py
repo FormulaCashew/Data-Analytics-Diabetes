@@ -221,6 +221,9 @@ if True:
     plt.ylabel("Actual")
     plt.show()
 
+    recall_decision_tree = cm[1][1] / (cm[1][1] + cm[1][0])
+    print(f"Recall for Decision Tree: {recall_decision_tree}")
+
 ################# KNN Library #################
 
 if True:
@@ -240,6 +243,9 @@ if True:
     plt.ylabel("Actual")
     plt.show()
     print(cm)
+
+    recall_knn = cm[1][1] / (cm[1][1] + cm[1][0])
+    print(f"Recall for KNN: {recall_knn}")
 
 ################# KNN Personal #################
 if False:
@@ -288,6 +294,8 @@ if True:
     # Shows a bar chart a bit different than the one from decision tree
     # Glucose postprandial has a higher importance but hba1c is still the most important
     
+    recall_random_forest = cm[1][1] / (cm[1][1] + cm[1][0])
+    print(f"Recall for Random Forest: {recall_random_forest}")
 ###################### XG Boost ####################
 
 if True:
@@ -308,8 +316,8 @@ if True:
     plt.show()
     print(cm)
 
-    recall = cm[1][1] / (cm[1][1] + cm[1][0])
-    print(f"Recall for XG Boost: {recall}")
+    recall_xgboost = cm[1][1] / (cm[1][1] + cm[1][0])
+    print(f"Recall for XG Boost: {recall_xgboost}")
 
 ################# Model Comparison #################
 print(f"Decision Tree Accuracy: {decision_tree_accuracy}")
@@ -318,6 +326,10 @@ print(f"Random Forest Accuracy: {random_forest_accuracy}")
 print(f"XG Boost Accuracy: {xgboost_accuracy}")
 best_model = max(decision_tree_accuracy, knn_accuracy, random_forest_accuracy, xgboost_accuracy)
 
+print(f"Decision Tree Recall: {recall_decision_tree}")
+print(f"KNN Recall: {recall_knn}")
+print(f"Random Forest Recall: {recall_random_forest}")
+print(f"XG Boost Recall: {recall_xgboost}")
 
 if best_model == decision_tree_accuracy:
     best_model_name = "Decision Tree"
