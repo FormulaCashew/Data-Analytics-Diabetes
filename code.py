@@ -308,6 +308,9 @@ if True:
     plt.show()
     print(cm)
 
+    recall = cm[1][1] / (cm[1][1] + cm[1][0])
+    print(f"Recall for XG Boost: {recall}")
+
 ################# Model Comparison #################
 print(f"Decision Tree Accuracy: {decision_tree_accuracy}")
 print(f"KNN Accuracy: {knn_accuracy}")
